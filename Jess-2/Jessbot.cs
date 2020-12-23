@@ -15,6 +15,15 @@ using System.Numerics;
 
 using Microsoft.Extensions.DependencyInjection;
 
+/* ======================================== *
+ *                                          *
+ *    CODED BY PEEFTUBE (JEREMY PEIFER)     *
+ *    =================================     *
+ *                                          *
+ *             JESSICA BOT V2               *
+ *             FOR DISCORD.NET              *
+ *                                          *
+ * ======================================== */
 
 namespace Jessbot
 {
