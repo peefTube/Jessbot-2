@@ -1,0 +1,340 @@
+#region JESSBOT2.0LIB
+
+    #region GENERAL SUBLIB
+
+    // Used to send data packets around in performing necessary functions, or to act as a predefined set of values
+    class JessDataLibrary
+    {
+        // All information values
+        string identifier = "NUL000";
+        string name = "NULL";
+        string category = "N/A";
+        string subcategory = "N/A";
+
+        string definition = "N/A";
+
+        #region ECONOMY CATEGORY SUBDEFS
+
+        // Store Info
+        ulong purchasePrice = 0;
+        ulong sellPrice = 0;
+
+        // Powerups and Upgradeables
+        int level = 0;
+        int size = 0;
+        int availablePlots = 0;
+
+        // Buildings
+        bool isGreenhouse = false;
+        bool canCraft = false;
+        bool canSmelt = false;
+        bool isBarn = false;
+        bool isAutomated = false;
+        bool isResourceProducer = false;
+        bool isPasture = false;
+
+        int resourceType = -1;
+
+        TimeSpan resProdInterval = new TimeSpan();
+
+        // Farm Plots
+        bool isPartOfBuilding = false;
+        
+        int livestockCapacity = 0;
+
+        // Crafting
+        bool canBeCrafted = false;
+
+        string ingredient1 = "NUL000";
+        int ingredient1_mult = 0;
+        string ingredient2 = "NUL000";
+        int ingredient2_mult = 0;
+        string ingredient3 = "NUL000";
+        int ingredient3_mult = 0;
+        string ingredient4 = "NUL000";
+        int ingredient4_mult = 0;
+
+        string result = "NUL000";
+        int result_mult = 0;
+
+        #endregion
+
+        public JessDataLibrary(string identifier, string name, string category, string subcategory, string definition, ulong purchasePrice, ulong sellPrice, int level, int size, int availablePlots, bool isGreenhouse, bool canCraft, bool canSmelt, bool isBarn, bool isAutomated, bool isResourceProducer, bool isPasture, int resourceType, TimeSpan resProdInterval, bool isPartOfBuilding, int livestockCapacity, bool canBeCrafted, string ingredient1, int ingredient1_mult, string ingredient2, int ingredient2_mult, string ingredient3, int ingredient3_mult, string ingredient4, int ingredient4_mult, string result, int result_mult)
+        {
+        }
+    }
+
+    #endregion
+
+    #region ECONOMY SUBLIB
+
+    // Used to store the unique identification data for items, buildings, etc.
+    // A template will be necessary for the scanLibrary function
+    class JessEconomyIdentifier
+    {
+        string identification = "NUL000"; // Begin with NUL000 - the "non-identifiable" ID
+
+        public string GetBuildingID() { return identification; }
+        public void SetBuildingID(string incomingID) { identification = incomingID; }
+
+        JessDataLibrary searcher = new JessDataLibrary();
+
+        // This is the library functionality and the biggest reason why this class is important!
+        public JessDataLibrary ScanLibrary()
+        {
+            switch (identification)
+            {
+                // BX - EXP Booster
+                #region EXP BOOSTERS
+
+                case "BX000": // EXP Booster 1
+
+                    break;
+                case "BX001": // EXP Booster 2
+
+                    break;
+                case "BX002": // EXP Booster 3
+
+                    break;
+                case "BX003": // EXP Booster 4
+
+                    break;
+
+                #endregion
+
+                // CB - Cash Boosters
+                #region CASH BOOSTERS
+
+                case "CB000": // Cash Booster 1
+
+                    break;
+                case "CB001": // Cash Booster 2
+
+                    break;
+
+                #endregion
+
+                // ITP - Purchaseable Items
+                #region PURCHASEABLE ITEMS
+
+                case "ITP000": // Fishing Rod 1
+
+                    break;
+                case "ITP001": // Mining Tools 1
+
+                    break;
+                case "ITP002": // Fishing Rod 2
+
+                    break;
+                case "ITP003": // Axe 1
+
+                    break;
+                case "ITP004": // Mining Tools 2
+
+                    break;
+
+                #endregion
+
+                // UM - User Marketplace
+                #region USER MARKETPLACE
+
+                case "UM000": // User Market Access
+
+                    break;
+                case "UM001": // User Market Investor 1
+
+                    break;
+                case "UM002": // Stock Market License
+
+                    break;
+
+                #endregion
+
+                // BLG - Buildings
+                #region BUILDINGS
+
+                case "BLG000": // Small Greenhouse 1
+
+                    break;
+                case "BLG001": // Crafting Station 1
+
+                    break;
+                case "BLG002": // Mill 1
+
+                    break;
+                case "BLG003": // Small Pasture 1
+
+                    break;
+                case "BLG004": // Small Barn 1
+
+                    break;
+                case "BLG005": // Forge 1
+
+                    break;
+                case "BLG006": // Glassworks 1
+
+                    break;
+                case "BLG007": // Sieve 1
+
+                    break;
+
+                #endregion
+
+                // LND - Land Plots
+                #region LAND PLOTS
+
+                case "LND000": // Small Field Plot
+
+                    break;
+                case "LND001": // Medium Field Plot
+
+                    break;
+
+                #endregion
+
+                // WPN - Weapons
+                #region WEAPONS
+
+                case "WPN000": // Wooden Bow 1
+
+                    break;
+
+                #endregion
+
+                // AM - Ammunition
+                #region AMMUNITION
+
+                case "AM000": // Arrows 1
+
+                    break;
+
+                #endregion
+
+                // RES - Resources
+                #region RESOURCES
+
+                case "RES000": // Resource: Wood
+
+                    break;
+                case "RES001": // Resource: Stone
+
+                    break;
+                case "RES002": // Resource: Tin Ore
+
+                    break;
+                case "RES003": // Resource: Coal
+
+                    break;
+
+                #endregion
+
+                // SED - Seeds
+                #region SEEDS
+
+                case "SED000": // Seed Packet 1
+
+                    break;
+                case "SED001": // Sapling 1
+
+                    break;
+
+                #endregion
+
+                // LSK - Livestock
+                #region LIVESTOCK
+
+                case "LSK000": // Chicken
+
+                    break;
+                case "LSK001": // Turkey
+
+                    break;
+                case "LSK002": // Pig
+
+                    break;
+                case "LSK003": // Sheep
+
+                    break;
+                case "LSK004": // Goat
+
+                    break;
+                case "LSK005": // Cow
+
+                    break;
+
+                #endregion
+
+                case "NUL000":
+                default:
+                    // NULL
+                    // Nothing should be done here.
+                    break;
+            }
+
+            return searcher;
+        }
+    }
+
+    // Used to store data for farm plots, pastures, greenhouse plots
+    class JessEconomyFarmPlot
+    {
+        ulong landID = 0;
+        ulong plotID = 0;
+
+        bool isPartOfBuilding = false;
+        bool isPasture = false;
+
+        // Default to -1 for these as this information is unknown
+        int crop = -1;
+        int livestock = -1;
+        int livestockCapacity = -1; // Unneeded unless isPasture
+        int livestockCapUsage = -1; // Unneeded unless isPasture
+    }
+
+    // Used to store data for buildings
+    class JessEconomyBuilding
+    {
+        ulong landID = 0;
+        ulong ownerID = 0;
+
+        JessEconomyIdentifier buildingID = new JessEconomyIdentifier();
+
+        bool isGreenhouse = false;
+        bool canCraft = false;
+        bool canSmelt = false;
+        bool isBarn = false;
+        bool isAutomated = false;
+        bool isResourceProducer = false;
+        bool isPasture = false;
+
+        int resourceType = -1; // Default to -1 as this information isn't used by anything except isResourceProducer
+        int level = 0; // Default to 0 as this is assumed to be a base-level building
+
+        TimeSpan resProdInterval = new TimeSpan(); // Initialize this as it determines the span of time between each resource production interval
+        DateTime prodStart = new DateTime(); // Initialize this as it is used to determine when any type of production began in this building
+
+        public string GetBuildingID()
+        {
+            return buildingID.GetBuildingID();
+        }
+
+        public void SetBuildingID(string incomingID)
+        {
+            buildingID.SetBuildingID(incomingID);
+        }
+    }
+
+    // Used to store all data for land plots
+    class JessEconomyLand
+    {
+        ulong ownerID = 0;
+        ulong landID = 0;
+
+        bool convertedToFarm = false;
+
+        int size = 0; // 0 = small, 1 = medium, 2 = big, 3 = huge
+    }
+
+    #endregion
+
+    #endregion
