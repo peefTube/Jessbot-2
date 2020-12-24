@@ -142,7 +142,7 @@ namespace Jessbot
                 }
 
                 // Login and start!
-                await jess.LoginAsync(TokenType.Bot, File.ReadAllText("token.lgtx"));
+                await jess.LoginAsync(TokenType.Bot, File.ReadAllText("token.ptsfx"));
                 await jess.StartAsync();
 
                 // This tells this Task to wait indefinitely for instructions.
