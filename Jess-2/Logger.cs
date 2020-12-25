@@ -99,11 +99,6 @@ namespace Jessbot
             // Which service is this being run by?
             switch (service)
             {
-                // The command handling service is being initialized.
-                case ServiceType.CommandHandling:
-                    serviceName = "Command Handling Service";
-                    Console.WriteLine($"Initializing {serviceName}...", Color.DarkBlue);
-                    break;
                 // The database services are being initialized.
                 case ServiceType.Database:
                     serviceName = "Database Services";
@@ -112,6 +107,11 @@ namespace Jessbot
                 // The message service is being initialized.
                 case ServiceType.Messaging:
                     serviceName = "Message Service";
+                    Console.WriteLine($"Initializing {serviceName}...", Color.DarkBlue);
+                    break;
+                // The registration service is being initialized.
+                case ServiceType.Registry:
+                    serviceName = "Registration Service";
                     Console.WriteLine($"Initializing {serviceName}...", Color.DarkBlue);
                     break;
             }
@@ -197,8 +197,21 @@ namespace Jessbot
                         if (input != null)
                         { Console.WriteLine($"[LOAD:GUILD] Guild load complete. [ {input} GUILDS ]", Color.DarkerGrey); }
                         else
-                        { Console.WriteLine($"[LOAD:GUILD] Error loading guilds. [ NO GUILDS ]", Color.DarkRed); }
+                        { Console.WriteLine($"[LOAD:GUILD] Error loading guilds. [ NO GUILDS? ]", Color.DarkRed); }
                         Console.WriteLine($"[LOAD:GUILD] Assuming next sequence.", Color.DarkerGrey);
+                    }
+                    break;
+                // We are loading user-specific data.
+                case LoadFuncs.User:
+                    if (!isComplete)
+                    { Console.WriteLine($"[LOAD:USER] Loading userbase...", Color.DarkerGrey); }
+                    else
+                    {
+                        if (input != null)
+                        { Console.WriteLine($"[LOAD:USER] Userbase load complete. [ {input} USERS ]", Color.DarkerGrey); }
+                        else
+                        { Console.WriteLine($"[LOAD:USER] Error loading userbase. [ NO USERS? ]", Color.DarkRed); }
+                        Console.WriteLine($"[LOAD:USER] Assuming next sequence.", Color.DarkerGrey);
                     }
                     break;
             }
@@ -226,7 +239,7 @@ namespace Jessbot
         }
 
         // Message processor functionality
-        public static void MessageStep(MsgStep step, bool isBot = false)
+        public static void MessageStep(MsgStep step, bool isCond = false)
         {
             // Which step are we on?
             switch (step)
@@ -241,13 +254,41 @@ namespace Jessbot
                 case MsgStep.IsBot:
                     Console.WriteLine($"Determining if author is a bot...", Color.DarkerGrey);
                     // Message was written by a bot.
-                    if (isBot)
+                    if (isCond)
                     { Console.WriteLine($"Message author is a bot. Analysis concluded.", Color.DarkTeal); }
                     // Message was written by a user.
                     else
                     { Console.WriteLine($"Message author is not a bot. Proceeding...", Color.Teal); }
+                    break;        
+                // We are checking if the message is a system message.
+                case MsgStep.IsSystem:
+                    Console.WriteLine($"Determining if message is a system message...", Color.DarkerGrey);
+                    // Message was written by the system.
+                    if (isCond)
+                    { Console.WriteLine($"Message is a system message. Analysis concluded.", Color.DarkTeal); }
+                    // Message was still written by a user.
+                    else
+                    { Console.WriteLine($"Message is a user message. Proceeding...", Color.Teal); }
+                    break;
+                // We are handling the registration check stage.
+                case MsgStep.CheckReg:
+                    // Before registration check.
+                    if (isCond)
+                    { Console.WriteLine($"Determining if user was registered...", Color.DarkerGrey); }
+                    // Post-registration check/handling.
+                    else
+                    { Console.WriteLine($"Registration check complete. Proceeding...", Color.Teal); }
                     break;
             }
+        }
+
+        // User registered
+        public static void UserRegistration(ulong newDBsize)
+        {
+            // There will be no break line here as this should only fire inside of message blocks.
+            Console.WriteLine($"Generating new user profile...", Color.DarkerGrey);
+            Console.WriteLine($"User profile generated and added to database.", Color.Teal);
+            Console.WriteLine($"[DB] {newDBsize} registered user(s) in database.", Color.Blue);
         }
     }
 
@@ -271,16 +312,13 @@ namespace Jessbot
         Pathing,
         Guild,
         User,
-        UExp,
-        UEcon,
-        UInv,
     }
 
     public enum ServiceType
     {
-        CommandHandling,
         Database,
         Messaging,
+        Registry,
     }
 
     public enum InitType
@@ -294,6 +332,8 @@ namespace Jessbot
     {
         Detection,
         IsBot,
+        IsSystem,
+        CheckReg,
     }
 
     #endregion

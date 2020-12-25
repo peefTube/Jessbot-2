@@ -120,9 +120,9 @@ namespace Jessbot
             #region SERVICE INJECTION NOTIFIER
             // Ensure this is kept up to date with the services added
             // within ServiceInjector.
-            Logger.InitService(ServiceType.CommandHandling);
             Logger.InitService(ServiceType.Database);
             Logger.InitService(ServiceType.Messaging);
+            Logger.InitService(ServiceType.Registry);
 
             #endregion
             Logger.InitStatus(false, true, InitType.Inject);
@@ -181,9 +181,9 @@ namespace Jessbot
             return new ServiceCollection()
                 .AddSingleton(client)
                 .AddSingleton(commandSys)
-                .AddSingleton<CommandHandlingService>()
                 .AddSingleton<DatabaseService>()
                 .AddSingleton<MessageService>()
+                .AddSingleton<RegistrationService>()
                 .BuildServiceProvider();
         }
 

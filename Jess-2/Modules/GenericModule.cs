@@ -19,9 +19,16 @@ using System.Windows.Forms;
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jessbot.Services
+using Jessbot;
+using Jessbot.Entities;
+using Jessbot.Services;
+
+namespace Jessbot.Modules
 {
-    class CommandHandlingService
+    // General help commands, etc. etc.
+    // You'll want to break off each individual command's handling
+    // into a separate file so this doesn't get too cluttered.
+    public sealed class GenericModule : CoreModule
     {
 
     }
