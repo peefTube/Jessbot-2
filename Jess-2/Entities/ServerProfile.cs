@@ -23,7 +23,7 @@ using Jessbot;
 
 namespace Jessbot.Entities
 {
-    class ServerProfile
+    public class ServerProfile
     {
         public ulong GuildId = 0; // Discord-side identifier value for this guild.
         string _name = "";        // The public guild name.

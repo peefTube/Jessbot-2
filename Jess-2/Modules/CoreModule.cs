@@ -21,20 +21,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Jessbot;
 using Jessbot.Entities;
+using Jessbot.Services;
 
-namespace Jessbot.Services
+namespace Jessbot.Modules
 {
-    public partial class DatabaseService
+    // This will establish a base module. You will need to pass the ENTIRETY of the Dependency Injector into this.
+    public abstract class CoreModule : ModuleBase<SocketCommandContext>
     {
-        private List<ServerProfile> _guilds = new List<ServerProfile>();
-        private List<UserProfile> _users = new List<UserProfile>();
-
-        // Get full list of guilds on a whim.
-        public List<ServerProfile> GetGuilds()
-        { return _guilds; }
-
-        // Get full list of users on a whim.
-        public List<UserProfile> GetUsers()
-        { return _users; }
+        // DI passes these in automatically.
+        public DatabaseService DB { get; set; }
+        public MessageService MessageService { get; set; }
+        public RegistrationService RegService { get; set; }
     }
 }

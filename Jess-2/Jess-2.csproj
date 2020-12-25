@@ -237,10 +237,12 @@
     <Compile Include="Entities\ServerProfile.cs" />
     <Compile Include="Entities\UserProfiles.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Modules\CoreModule.cs" />
+    <Compile Include="Modules\GenericModule.cs" />
     <Compile Include="Services\DatabaseService.cs" />
-    <Compile Include="Services\CommandHandlingService.cs" />
     <Compile Include="Services\DatabaseServiceIO.cs" />
     <Compile Include="Services\MessageService.cs" />
+    <Compile Include="Services\RegistrationService.cs" />
     <None Include="Jess2-INITIALVERSION.cs" />
     <Compile Include="Jessbot.cs" />
     <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
@@ -362,6 +364,7 @@
     <Folder Include=".vs\TAIANAUnit\v15\" />
     <Folder Include="bin\Debug\ADV_HIERARCHY\USERS\" />
     <Folder Include="bin\Release\" />
+    <Folder Include="Modules\Generic\" />
     <Folder Include="Pictures\" />
   </ItemGroup>
   <ItemGroup>
