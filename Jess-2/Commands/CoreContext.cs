@@ -23,13 +23,17 @@ using Jessbot;
 using Jessbot.Entities;
 using Jessbot.Services;
 
-namespace Jessbot.Modules
+namespace Jessbot.Commands
 {
-    // General help commands, etc. etc.
-    // You'll want to break off each individual command's handling
-    // into a separate file so this doesn't get too cluttered.
-    public sealed class GenericModule : CoreModule
+    public sealed class CoreContext : SocketCommandContext
     {
+        public string Prefix { get; }
+        public string Text { get; }
 
+        public CoreContext(DiscordSocketClient bot, SocketUserMessage msg, string prefix = "JR.") : base(bot, msg)
+        {
+            Prefix = prefix;
+            Text = msg.Content;
+        }
     }
 }

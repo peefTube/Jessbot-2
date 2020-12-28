@@ -102,19 +102,22 @@ namespace Jessbot
                 // The database services are being initialized.
                 case ServiceType.Database:
                     serviceName = "Database Services";
-                    Console.WriteLine($"Initializing {serviceName}...", Color.DarkBlue);
                     break;
                 // The message service is being initialized.
                 case ServiceType.Messaging:
                     serviceName = "Message Service";
-                    Console.WriteLine($"Initializing {serviceName}...", Color.DarkBlue);
                     break;
                 // The registration service is being initialized.
                 case ServiceType.Registry:
                     serviceName = "Registration Service";
-                    Console.WriteLine($"Initializing {serviceName}...", Color.DarkBlue);
+                    break;
+                // The registration service is being initialized.
+                case ServiceType.Converter:
+                    serviceName = "Conversion Service";
                     break;
             }
+
+            Console.WriteLine($"Initializing {serviceName}...", Color.DarkBlue);
         }
         
         // MainAsync() segment
@@ -319,6 +322,7 @@ namespace Jessbot
         Database,
         Messaging,
         Registry,
+        Converter,
     }
 
     public enum InitType

@@ -23,14 +23,16 @@ using Jessbot;
 using Jessbot.Entities;
 using Jessbot.Services;
 
-namespace Jessbot.Modules
+namespace Jessbot.Commands
 {
     // This will establish a base module. You will need to pass the ENTIRETY of the Dependency Injector into this.
-    public abstract class CoreModule : ModuleBase<SocketCommandContext>
+    public abstract class CoreModule : ModuleBase<CoreContext>
     {
         // DI passes these in automatically.
-        public DatabaseService DB { get; set; }
+        public DiscordSocketClient Bot { get; set; }
+        public DatabaseService Database { get; set; }
         public MessageService MessageService { get; set; }
         public RegistrationService RegService { get; set; }
+        public ConversionService Converter { get; set; }
     }
 }

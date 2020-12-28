@@ -27,10 +27,13 @@ namespace Jessbot.Entities
     {
         public ulong UserID = 0; // Discord-side identifier value for this user.
 
-        BigInteger _experience = 0; // Massive integer value for containing experience data.
-        BigInteger _balance = 0;    // Massive integer value for containing wallet balance data.
+        public BigInteger Experience = 0; // Massive integer value for containing experience data.
+        public BigInteger Balance = 0;    // Massive integer value for containing wallet balance data.
 
-        ulong _level = 0; // Unsigned long integer value for containing user's levelling data.
+        public ulong Level = 0; // Unsigned long integer value for containing user's levelling data.
+
+        public Color PrefColor = new Color(0, 0, 0); // User-designated preferred color. Defaults to black.
+        public string UserUTC = "UTC-00:00"; // User-designated UTC code. Defaults to UTC itself.
 
         // Subprofiles.
         public ExpProfile ExpData = new ExpProfile();    // Experience subprofile.
@@ -45,13 +48,20 @@ namespace Jessbot.Entities
             // Each of these should be self-explanatory.
             UserID = (ulong)incoming[0];
 
-            _experience = (BigInteger)incoming[1];
-            _balance    = (BigInteger)incoming[2];
+            Experience = (BigInteger)incoming[1];
+            Balance = (BigInteger)incoming[2];
 
-            _level = (ulong)incoming[3];
+            Level = (ulong)incoming[3];
+
+            // This manages color input.
+            int[] _tempColor = ((string)incoming[4]).Split(',').Select(_raw => int.Parse(_raw)).ToArray();
+            PrefColor = new Color(_tempColor[0], _tempColor[1], _tempColor[2]);
+
+            // This should be self-explanatory again.
+            UserUTC = (string)incoming[5];
 
             // This loads the subprofiles in and replaces the defaults with the new ones.
-            List<object> subprofiles = (List<object>)incoming[4];
+            List<object> subprofiles = (List<object>)incoming[6];
             ExpData   = (ExpProfile)subprofiles[0];
             EconData  = (EconProfile)subprofiles[1];
             Inventory = (InvProfile)subprofiles[2];
@@ -63,15 +73,49 @@ namespace Jessbot.Entities
             UserID = id; // You only need to pass in the user's Discord-side ID value.
                          // Everything else is automatically initialized and ready to go.
         }
+
+        // Special enum-based getter for subprofiles.
+        // Might be useless given these are set public...
+        public object GetSubProf(SubProfs subprofile)
+        {
+            switch (subprofile)
+            {
+                case SubProfs.Exp:
+                    return ExpData;
+                case SubProfs.Econ:
+                    return EconData;
+                case SubProfs.Inv:
+                    return Inventory;
+                default:
+                    return null;
+            }
+        }
     }
 
     public class ExpProfile
     {
+        public Dictionary<ulong, bool> Properties = new Dictionary<ulong, bool>();
+        public Dictionary<ulong, bool> Unlocks    = new Dictionary<ulong, bool>();
 
         // Empty constructor. Will initialize everything to its default value.
         public ExpProfile()
         {
-            // TODO: Write me!
+            // All will be set to false since they will be set true over time or upon loading.
+            // Initialize the properties.
+            Properties.Add(00, false); // Boost
+            Properties.Add(01, false);
+            Properties.Add(02, false);
+            Properties.Add(03, false);
+            Properties.Add(04, false);
+            Properties.Add(05, false);
+            Properties.Add(06, false);
+            Properties.Add(07, false);
+            Properties.Add(08, false);
+            Properties.Add(09, false);
+
+            // Initialize some unlocks.
+            Unlocks.Add(2, false); // Unlocks for level two.
+            Unlocks.Add(5, false); // Unlocks for level five.
         }
 
         // I/O constructor. Will initialize everything from existing data.
@@ -83,11 +127,28 @@ namespace Jessbot.Entities
 
     public class EconProfile
     {
+        public Dictionary<ulong, bool> Properties = new Dictionary<ulong, bool>();
+        public Dictionary<ulong, bool> Tiers      = new Dictionary<ulong, bool>();
 
         // Empty constructor. Will initialize everything to its default value.
         public EconProfile()
         {
-            // TODO: Write me!
+            // All will be set to false since they will be set true over time or upon loading.
+            // Initialize the properties.
+            Properties.Add(00, false); // Boost
+            Properties.Add(01, false);
+            Properties.Add(02, false);
+            Properties.Add(03, false);
+            Properties.Add(04, false);
+            Properties.Add(05, false);
+            Properties.Add(06, false);
+            Properties.Add(07, false);
+            Properties.Add(08, false);
+            Properties.Add(09, false);
+
+            // Initialize some tiers.
+            Tiers.Add(1, false); // Tier One
+            Tiers.Add(2, false); // Tier Two
         }
 
         // I/O constructor. Will initialize everything from existing data.
@@ -99,11 +160,26 @@ namespace Jessbot.Entities
 
     public class InvProfile
     {
+        public Dictionary<ulong, BigInteger> TL_TOOLS       = new Dictionary<ulong, BigInteger>();
+        public Dictionary<ulong, BigInteger> FDS_FOODSTUFFS = new Dictionary<ulong, BigInteger>();
+        public Dictionary<ulong, BigInteger> RM_RAWMATS     = new Dictionary<ulong, BigInteger>();
 
         // Empty constructor. Will initialize everything to its default value.
         public InvProfile()
         {
-            // TODO: Write me!
+            // Initialize tools.
+            TL_TOOLS.Add(00, 0); // Fishing Rod I (TL00)
+
+            // Initialize foodstuffs.
+            FDS_FOODSTUFFS.Add(00, 0); // Fish, Tiny (FDS00)
+            FDS_FOODSTUFFS.Add(01, 0); // Fish, Small (FDS01)
+            FDS_FOODSTUFFS.Add(02, 0); // Fish, Medium (FDS02)
+            FDS_FOODSTUFFS.Add(03, 0); // Fish, Large (FDS03)
+            FDS_FOODSTUFFS.Add(04, 0); // Fish, Huge (FDS04)
+
+            // Initialize raw materials.
+            RM_RAWMATS.Add(00, 0); // Gold Nugget, Tiny (RM00)
+            RM_RAWMATS.Add(01, 0); // Gold Nugget, Small (RM01)
         }
 
         // I/O constructor. Will initialize everything from existing data.
@@ -111,5 +187,12 @@ namespace Jessbot.Entities
         {
             // TODO: Write me!
         }
+    }
+
+    public enum SubProfs
+    {
+        Exp,
+        Econ,
+        Inv
     }
 }
