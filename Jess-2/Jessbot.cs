@@ -34,7 +34,7 @@ using Jessbot.Services;
 
 namespace Jessbot
 {
-    class Jessbot
+    public partial class Jessbot
     {
         // Version information
         #region VERSION DATA
@@ -53,9 +53,44 @@ namespace Jessbot
         // Initialize core bot; this may later be replaced with shard clients.
         private readonly DiscordSocketClient _jessbot;
 
+        // Initialize list of bot owners.
+        public static readonly ulong[] Owners = { 236738543387541507, 553420930244673536, 559942856249442305 };
+
         // Initialize command handling and service provider.
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
+
+        // Initialize a random number generator. This should always be public.
+        public static readonly Random RNG = new Random();
+
+        // Initialize constants.
+        public static readonly string JB = $"{ new Emoji("<:jessbucks:561818526923620353>").ToString() }";
+        public static readonly Dictionary<string, TimeSpan> CodesUTC = new Dictionary<string, TimeSpan>()
+        {
+                    // Zero and positives
+                    { "UTC-00:00", TimeSpan.Zero },   { "UTC+01:00", new TimeSpan(1, 0, 0) },
+            { "UTC+02:00", new TimeSpan(2, 0, 0) },   { "UTC+03:00", new TimeSpan(3, 0, 0) },
+            { "UTC+03:30", new TimeSpan(3, 30, 0) },  { "UTC+04:00", new TimeSpan(4, 0, 0) },
+            { "UTC+05:00", new TimeSpan(5, 0, 0) },   { "UTC+05:30", new TimeSpan(5, 30, 0) },
+            { "UTC+05:45", new TimeSpan(5, 45, 0) },  { "UTC+06:00", new TimeSpan(6, 0, 0) },
+            { "UTC+06:30", new TimeSpan(6, 30, 0) },  { "UTC+07:00", new TimeSpan(7, 0, 0) },
+            { "UTC+08:00", new TimeSpan(8, 0, 0) },   { "UTC+08:45", new TimeSpan(8, 45, 0) },
+            { "UTC+09:00", new TimeSpan(9, 0, 0) },   { "UTC+09:30", new TimeSpan(9, 30, 0) },
+            { "UTC+10:00", new TimeSpan(10, 0, 0) },  { "UTC+10:30", new TimeSpan(10, 30, 0) },
+            { "UTC+11:00", new TimeSpan(11, 0, 0) },  { "UTC+12:00", new TimeSpan(12, 0, 0) },
+            { "UTC+12:45", new TimeSpan(12, 45, 0) }, { "UTC+13:00", new TimeSpan(13, 0, 0) },
+            { "UTC+13:45", new TimeSpan(13, 45, 0) }, { "UTC+14:00", new TimeSpan(14, 0, 0) },
+
+            // Negatives
+            { "UTC-01:00", new TimeSpan(-1, 0, 0) },   { "UTC-02:00", new TimeSpan(-2, 0, 0) },
+            { "UTC-02:30", new TimeSpan(-2, -30, 0) }, { "UTC-03:00", new TimeSpan(-3, 0, 0) },
+            { "UTC-03:30", new TimeSpan(-3, -30, 0) }, { "UTC-04:00", new TimeSpan(-4, 0, 0) },
+            { "UTC-04:30", new TimeSpan(-4, -30, 0) }, { "UTC-05:00", new TimeSpan(-5, 0, 0) },
+            { "UTC-06:00", new TimeSpan(-6, 0, 0) },   { "UTC-07:00", new TimeSpan(-7, 0, 0) },
+            { "UTC-08:00", new TimeSpan(-8, 0, 0) },   { "UTC-09:00", new TimeSpan(-9, 0, 0) },
+            { "UTC-09:30", new TimeSpan(-9, -30, 0) }, { "UTC-10:00", new TimeSpan(-10, 0, 0) },
+            { "UTC-11:00", new TimeSpan(-11, 0, 0) },  { "UTC-12:00", new TimeSpan(-12, 0, 0) }
+        };
 
         #region PROGRAM
 
@@ -123,6 +158,7 @@ namespace Jessbot
             Logger.InitService(ServiceType.Database);
             Logger.InitService(ServiceType.Messaging);
             Logger.InitService(ServiceType.Registry);
+            Logger.InitService(ServiceType.Converter);
 
             #endregion
             Logger.InitStatus(false, true, InitType.Inject);
@@ -138,13 +174,21 @@ namespace Jessbot
         {
             // Log to console.
             Logger.AsyncStarted();
-            Logger.AsyncStatus(false, MainAsyncS.Load);
 
-            // Load database.
-            _services.GetRequiredService<DatabaseService>().Load();
+            // Only run if the bot should be loading information!
+            if (_load)
+            {
+                // Log to console.
+                Logger.AsyncStatus(false, MainAsyncS.Load);
+
+                // Load database.
+                _services.GetRequiredService<DatabaseService>().Load();
+
+                // Log to console.
+                Logger.AsyncStatus(true, MainAsyncS.Load);
+            }
 
             // Log to console.
-            Logger.AsyncStatus(true, MainAsyncS.Load);
             Logger.AsyncStatus(false, MainAsyncS.MessagesInit);
 
             // Initialize message logic.
@@ -183,7 +227,9 @@ namespace Jessbot
                 .AddSingleton(commandSys)
                 .AddSingleton<DatabaseService>()
                 .AddSingleton<MessageService>()
+                .AddSingleton<ParserService>()
                 .AddSingleton<RegistrationService>()
+                .AddSingleton<ConversionService>()
                 .BuildServiceProvider();
         }
 

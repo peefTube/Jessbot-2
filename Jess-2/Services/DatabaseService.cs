@@ -26,15 +26,23 @@ namespace Jessbot.Services
 {
     public partial class DatabaseService
     {
-        private List<ServerProfile> _guilds = new List<ServerProfile>();
-        private List<UserProfile> _users = new List<UserProfile>();
+        private Dictionary<ulong, ServerProfile> _guilds = new Dictionary<ulong, ServerProfile>();
+        private Dictionary<ulong, UserProfile> _users    = new Dictionary<ulong, UserProfile>();
+
+        private readonly DiscordSocketClient _bot;
+
+        // Builds the database from the DI.
+        public DatabaseService(DiscordSocketClient bot)
+        {
+            _bot = bot;
+        }
 
         // Get full list of guilds on a whim.
-        public List<ServerProfile> GetGuilds()
+        public Dictionary<ulong, ServerProfile> GetGuilds()
         { return _guilds; }
 
         // Get full list of users on a whim.
-        public List<UserProfile> GetUsers()
+        public Dictionary<ulong, UserProfile> GetUsers()
         { return _users; }
     }
 }

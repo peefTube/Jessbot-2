@@ -234,14 +234,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\CoreContext.cs" />
+    <Compile Include="Commands\Modules\UserModule.cs" />
+    <Compile Include="Commands\Modules\User\UserColorCommand.cs" />
+    <Compile Include="Commands\Modules\User\UserProfileCommand.cs" />
     <Compile Include="Entities\ServerProfile.cs" />
     <Compile Include="Entities\UserProfiles.cs" />
+    <Compile Include="StartupSettings.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="Modules\CoreModule.cs" />
-    <Compile Include="Modules\GenericModule.cs" />
+    <Compile Include="Commands\CoreModule.cs" />
+    <Compile Include="Services\ConversionService.cs" />
     <Compile Include="Services\DatabaseService.cs" />
     <Compile Include="Services\DatabaseServiceIO.cs" />
     <Compile Include="Services\MessageService.cs" />
+    <Compile Include="Services\ParserService.cs" />
     <Compile Include="Services\RegistrationService.cs" />
     <None Include="Jess2-INITIALVERSION.cs" />
     <Compile Include="Jessbot.cs" />
@@ -364,7 +370,6 @@
     <Folder Include=".vs\TAIANAUnit\v15\" />
     <Folder Include="bin\Debug\ADV_HIERARCHY\USERS\" />
     <Folder Include="bin\Release\" />
-    <Folder Include="Modules\Generic\" />
     <Folder Include="Pictures\" />
   </ItemGroup>
   <ItemGroup>
