@@ -66,8 +66,8 @@ namespace Jessbot.Services
             };
             Notifier.AddField("Hello!", $"Welcome to Jessica Bot II! You have been registered as **user #{UserDBCount}**!");
             Notifier.AddField("Where to Start", $"Here are some commands to get you started with setting up your profile!\n" +
-                $"`{prefix}mycolor <#hhhhhh>` - `#hhhhhh` should be replaced with a hexadecimal color code.\n" +
-                $"`{prefix}mytimezone <utc-00:00>` - `utc-00:00` should be replaced with your timezone's offset code.\n");
+                $"`{prefix}color <#hhhhhh>` - `#hhhhhh` should be replaced with a hexadecimal color code.\n" +
+                $"`{prefix}utc <utc-00:00>` - `utc-00:00` should be replaced with your timezone's offset code.\n");
             Auth.SendMessageAsync("", false, Notifier.Build());
             
             // Log to the console.
@@ -103,8 +103,8 @@ namespace Jessbot.Services
             Notifier.AddField("Hello!", $"Welcome to Jessica Bot II! You have been registered as **user #{UserDBCount}** by " +
                 $"**{Auth.Username}#{Auth.Discriminator}**!");
             Notifier.AddField("Where to Start", $"Here are some commands to get you started with setting up your profile!\n" +
-                $"`{prefix}mycolor <#hhhhhh>` - `#hhhhhh` should be replaced with a hexadecimal color code.\n" +
-                $"`{prefix}mytimezone <utc-00:00>` - `utc-00:00` should be replaced with your timezone's offset code.\n");
+                $"`{prefix}color <#hhhhhh>` - `#hhhhhh` should be replaced with a hexadecimal color code.\n" +
+                $"`{prefix}utc <utc-00:00>` - `utc-00:00` should be replaced with your timezone's offset code.\n");
             Auth.SendMessageAsync("", false, Notifier.Build());
 
             // Log to the console.
