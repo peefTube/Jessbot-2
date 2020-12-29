@@ -105,7 +105,7 @@ namespace Jessbot.Services
             Notifier.AddField("Where to Start", $"Here are some commands to get you started with setting up your profile!\n" +
                 $"`{prefix}color <#hhhhhh>` - `#hhhhhh` should be replaced with a hexadecimal color code.\n" +
                 $"`{prefix}utc <utc-00:00>` - `utc-00:00` should be replaced with your timezone's offset code.\n");
-            Auth.SendMessageAsync("", false, Notifier.Build());
+            _bot.GetUser(target).SendMessageAsync("", false, Notifier.Build());
 
             // Log to the console.
             // This happens AFTER the profile generation to simplify code.

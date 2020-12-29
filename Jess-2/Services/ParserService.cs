@@ -42,14 +42,53 @@ namespace Jessbot.Services
             _db = databaseService;
             _cmd = cmd;
             _reg = registryService;
-
-            // Hook CommandExecuted to handle post-command-execution logic.
-            _cmd.CommandExecuted += PostExecutionAsync;
         }
 
         public async Task PostExecutionAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
-            await Task.CompletedTask;
+            if (result.IsSuccess)
+            { return; }
+            else
+            {
+                ulong GuildID = 0;
+                ulong AuthID = context.User.Id;
+
+                bool IsGuild = context.Guild != null;
+                if (IsGuild) { GuildID = context.Guild.Id; }
+
+                CommandInfo info = null;
+                if (command.IsSpecified) { info = command.Value; }
+                
+                UserProfile Auth = _db.GetUsers()[AuthID];
+
+                string prefix = "JR.";
+                if (_db.GetGuilds().Keys.Contains(GuildID)) { prefix = _db.GetGuilds()[GuildID].Prefix; }
+
+                EmbedBuilder Popup = new EmbedBuilder { Title = "Error!", Color = new Color(255, Auth.PrefColor.G / 4, Auth.PrefColor.B / 4),
+                    Footer = new EmbedFooterBuilder { Text = "Attempted command: " + context.Message.Content },
+                    ThumbnailUrl = _bot.CurrentUser.GetAvatarUrl() };
+
+                switch (result.Error.Value)
+                {
+                    case CommandError.UnknownCommand:
+                        Popup.AddField("Command Not Recognized", "Oh, uh... I don't know what it is you mean for me to do here...");
+                        break;
+                    case CommandError.BadArgCount:
+                        await context.Channel.SendMessageAsync(info.Attributes[0].ToString());
+                        Popup.AddField("Incorrect Argument Count", "I can't work with this information!");
+                        break;
+                    case CommandError.UnmetPrecondition:
+                        await context.Channel.SendMessageAsync(info.Preconditions[0].ToString());
+                        Popup.AddField("Incorrect Argument Count", "I can't work with this information!");
+                        break;
+                    default:
+                        Popup.AddField("Unknown Error", "I'm not entirely sure what happened. Please let `peefTube#9100` know the command " +
+                            "which caused this error, which can be found in the footer.");
+                        break;
+                }
+
+                await context.Channel.SendMessageAsync("", false, Popup.Build());
+            }
         }
     }
 }

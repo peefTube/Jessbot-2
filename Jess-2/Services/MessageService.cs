@@ -6,6 +6,8 @@ using Discord.Rest;
 using Colorful;
 using Console = Colorful.Console;
 
+using Interactivity;
+
 using System;
 using System.Timers;
 using System.Collections.Generic;
@@ -37,8 +39,13 @@ namespace Jessbot.Services
         private readonly ParserService _parse;
         private readonly ConversionService _convert;
 
+        private readonly ExperienceService _exp;
+        private readonly EconomyService _econ;
+        private readonly InventoryService _inv;
+
         public MessageService(IServiceProvider services, DiscordSocketClient bot, DatabaseService databaseService, CommandService cmd,
-            RegistrationService registryService, ParserService parser, ConversionService converter)
+            RegistrationService registryService, ParserService parser, ConversionService converter, ExperienceService exp, EconomyService econ,
+            InventoryService inv)
         {
             _services = services;
             _bot = bot;
@@ -48,6 +55,10 @@ namespace Jessbot.Services
             _reg = registryService;
             _parse = parser;
             _convert = converter;
+
+            _exp = exp;
+            _econ = econ;
+            _inv = inv;
         }
 
         // Receives and handles incoming messages.
@@ -140,40 +151,21 @@ namespace Jessbot.Services
                     Logger.MessageStep(MsgStep.CheckReg, false); // This signifies that the check has finished.
 
                     // Now that the user is definitely registered, offload the message functionality
-                    // as necessary. 
-                    // TODO: Create an experience service.
+                    // as necessary.
+                    // Offload the message to the experience handler.
+                    await _exp.CalculateFromMessage(msg, msg.Author.Id);
+
                     // TODO: Create an economy service.
 
                     // Offload the message to the command handler.
                     if ((msg as SocketUserMessage).HasStringPrefix(_prefix, ref _pos, StringComparison.OrdinalIgnoreCase))
                     {
-                        bool successful = false;
-
                         var context = new CoreContext(_bot, msg as SocketUserMessage, _prefix);
                         var result = await _cmd.ExecuteAsync(context, _pos, _services);
-
-                        if (result.IsSuccess)
-                        { successful = true; }
-
-                        if (successful)
-                        { }
-                        else
-                        {
-                            if (Jessbot.Owners.Contains(msg.Author.Id))
-                            {
-                                await context.Channel.SendMessageAsync("Uh-oh! Something went wrong.\n" +
-                                $"You encountered an error of: `{result.Error}` with command `{msg.Content.Substring(_prefix.Length)}`.");
-                            }
-                            else
-                            {
-                                await context.Channel.SendMessageAsync("Uh-oh! Something went wrong.\n" +
-                                $"Please tell {_bot.GetUser(Jessbot.Owners[0]).Mention} that you encountered an error of: `" + result.Error +
-                                $"` with command `{msg.Content.Substring(_prefix.Length)}` for me, okay?");
-                            }
-                        }
                     }
 
-                    // Everything is finished! Save the database to prevent any issues.
+                    // Everything is finished! Set any necessary values, 
+                    // then save the database to prevent any issues.
                     _db.Save();
                 }
             }

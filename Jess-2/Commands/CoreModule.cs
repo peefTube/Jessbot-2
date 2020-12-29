@@ -6,6 +6,8 @@ using Discord.Rest;
 using Colorful;
 using Console = Colorful.Console;
 
+using Interactivity;
+
 using System;
 using System.Timers;
 using System.Collections.Generic;
@@ -34,5 +36,6 @@ namespace Jessbot.Commands
         public MessageService MessageService { get; set; }
         public RegistrationService RegService { get; set; }
         public ConversionService Converter { get; set; }
+        public InteractivityService Interaction { get; set; }
     }
 }

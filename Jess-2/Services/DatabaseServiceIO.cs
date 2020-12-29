@@ -71,7 +71,7 @@ namespace Jessbot.Services
                         DataPass.Add(bool.Parse(ServerDatabaseLoad[i + 16]));
                         // USERBAN MESSAGE TOGGLING:
                         DataPass.Add(bool.Parse(ServerDatabaseLoad[i + 18]));
-                        // PRIVATE TOGGLING:
+                        // VISIBILITY TOGGLING:
                         DataPass.Add(bool.Parse(ServerDatabaseLoad[i + 20]));
                     }
 
@@ -102,9 +102,9 @@ namespace Jessbot.Services
                     // by passing them in through the collector list defined here, which
                     // is then passed into DataPass.
                     List<object> SubProfiles = new List<object>();
-                    List<object> ExpProfPass = new List<object>();
-                    List<object> EcnProfPass = new List<object>();
-                    List<object> InvProfPass = new List<object>();
+                    ExpProfile   ExpProfPass = new ExpProfile();
+                    EconProfile  EcnProfPass = new EconProfile();
+                    InvProfile   InvProfPass = new InvProfile();
 
                     // Handle the collector.
                     DataPass.Add(ulong.Parse(UserDatabaseLoad[i + 4]));
@@ -145,11 +145,6 @@ namespace Jessbot.Services
                         // ---------------------- WHITESPACE FOR READABILITY ---------------------- 
 
                         // Handling experience subprofile.
-                        // Be ready to pass this into the SubProfiles collector!
-                        // Create two subcollectors first. This will make it easier
-                        // to process the profile data.
-                        List<bool> ExpPrfPrprts = new List<bool>(); // Properties
-                        List<bool> ExpPrfUnloks = new List<bool>(); // Unlocks
 
                         // First handle properties of the experience subprofile.
                         string ExpSubDir = Path.Combine(UserDir, "EXPERIENCE");
@@ -158,7 +153,7 @@ namespace Jessbot.Services
                         {
                             if (j + 1 < ExpPropsLoad.Length)
                             {
-                                ExpPrfPrprts.Add(bool.Parse(ExpPropsLoad[j + 1]));
+                                ExpProfPass.Properties[ulong.Parse(ExpPropsLoad[j])] = bool.Parse(ExpPropsLoad[j + 1]);
                             }
                         }
 
@@ -168,26 +163,16 @@ namespace Jessbot.Services
                         {
                             if (j + 1 < ExpUnlocksLoad.Length)
                             {
-                                ExpPrfUnloks.Add(bool.Parse(ExpUnlocksLoad[j + 1]));
+                                ExpProfPass.Unlocks[ulong.Parse(ExpUnlocksLoad[j])] = bool.Parse(ExpUnlocksLoad[j + 1]);
                             }
                         }
 
-                        // Passer data is ready, prepare passer and use it!
-                        ExpProfPass.Add(ExpPrfPrprts);
-                        ExpProfPass.Add(ExpPrfUnloks);
-                        SubProfiles.Add(new ExpProfile(ExpProfPass));
-
-                        // Now that the passer has been used, clear its data.
-                        ExpProfPass.Clear(); ExpPrfPrprts.Clear(); ExpPrfUnloks.Clear();
+                        // Passer data is ready, use it!
+                        SubProfiles.Add(ExpProfPass);
 
                         // ---------------------- WHITESPACE FOR READABILITY ---------------------- 
 
                         // Handling economy subprofile.
-                        // Be ready to pass this into the SubProfiles collector!
-                        // Create two subcollectors first. This will make it easier
-                        // to process the profile data.
-                        List<bool> EcnPrfPrprts = new List<bool>(); // Properties
-                        List<bool> EcnProfTiers = new List<bool>(); // Tiers
 
                         // First handle properties of the economy subprofile.
                         string EcnSubDir = Path.Combine(UserDir, "ECONOMY");
@@ -196,7 +181,7 @@ namespace Jessbot.Services
                         {
                             if (j + 1 < EcnPropsLoad.Length)
                             {
-                                EcnPrfPrprts.Add(bool.Parse(EcnPropsLoad[j + 1]));
+                                EcnProfPass.Properties[ulong.Parse(EcnPropsLoad[j])] = bool.Parse(EcnPropsLoad[j + 1]);
                             }
                         }
 
@@ -206,34 +191,22 @@ namespace Jessbot.Services
                         {
                             if (j + 1 < EcnTiersLoad.Length)
                             {
-                                EcnProfTiers.Add(bool.Parse(EcnTiersLoad[j + 1]));
+                                EcnProfPass.Tiers[ulong.Parse(EcnTiersLoad[j])] = bool.Parse(EcnTiersLoad[j + 1]);
                             }
                         }
-
-                        // Passer data is ready, prepare passer and use it!
-                        EcnProfPass.Add(EcnPrfPrprts);
-                        EcnProfPass.Add(EcnProfTiers);
-                        SubProfiles.Add(new EconProfile(EcnProfPass));
-
-                        // Now that the passer has been used, clear its data.
-                        EcnProfPass.Clear(); EcnPrfPrprts.Clear(); EcnProfTiers.Clear();
+                        
+                        // Passer data is ready, use it!
+                        SubProfiles.Add(EcnProfPass);
 
                         // ---------------------- WHITESPACE FOR READABILITY ---------------------- 
 
                         // Handling inventory subprofile.
-                        // Be ready to pass this into the SubProfiles collector!
-                        // Create multiple subcollectors first. This will make it easier
-                        // to process the profile data.
-                        // TODO: Prepare inventory data collectors
 
                         // TODO: Collect inventory from file
 
-                        // Passer data is ready, prepare passer and use it!
+                        // Passer data is ready, use it!
                         // TODO: Place inventory data in passer
-                        SubProfiles.Add(new InvProfile(InvProfPass));
-
-                        // Now that the passer has been used, clear its data.
-                        InvProfPass.Clear();
+                        SubProfiles.Add(InvProfPass);
 
                         // ---------------------- WHITESPACE FOR READABILITY ---------------------- 
 
@@ -293,7 +266,7 @@ namespace Jessbot.Services
                     file.WriteLine((bool)_guilds[i].DataPass()[7]);         // i = 16
                     file.WriteLine("USERBAN MESSAGE TOGGLING:");            // i = 17
                     file.WriteLine((bool)_guilds[i].DataPass()[8]);         // i = 18
-                    file.WriteLine("PRIVATE TOGGLING:");                    // i = 19
+                    file.WriteLine("VISIBILITY TOGGLING:");                    // i = 19
                     file.WriteLine((bool)_guilds[i].DataPass()[9]);         // i = 20
                     file.WriteLine("");                                     // i = 21
                 }

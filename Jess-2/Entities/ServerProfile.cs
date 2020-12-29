@@ -26,39 +26,46 @@ namespace Jessbot.Entities
     public class ServerProfile
     {
         public ulong GuildId = 0; // Discord-side identifier value for this guild.
-        string _name = "";        // The public guild name.
+        public string Name = "";  // The public guild name.
 
-        ulong _welcomeChannel = 0; // Discord-side identifier value for a particular channel.
-        ulong _welcomeRole = 0;    // Discord-side identifier value for a particular role.
+        public ulong WelcomeChannel = 0; // Discord-side identifier value for a particular channel.
+        public ulong WelcomeRole = 0;    // Discord-side identifier value for a particular role.
 
-        ulong _modChannel = 0;     // Discord-side identifier value for a particular channel.
+        public ulong ModChannel = 0;     // Discord-side identifier value for a particular channel.
 
         public string Prefix = "JR.";  // The prefix for commands. Defaults to this value if not set.
 
-        bool _allowingInvites = false; // Toggles invite creation functionality.
-        bool _allowingJoinMsg = true;  // Toggles join and leave messages.
-        bool _allowingBansMsg = true;  // Toggles ban messages.
-        bool _allowingVisible = true;  // Toggles visibility in the server directory.
+        public bool AllowingInvites = false; // Toggles invite creation functionality.
+        public bool AllowingJoinMsg = true;  // Toggles join and leave messages.
+        public bool AllowingBansMsg = true;  // Toggles ban messages.
+        public bool AllowingVisible = true;  // Toggles visibility in the server directory.
+        
+        // Default, empty constructor. Everything is pre-set, minus server ID and name. Pass these in.
+        public ServerProfile(ulong ID, string NamePass)
+        {
+            GuildId = ID;
+            Name = NamePass;
+        }
 
         // Constructor for Database I/O or complete registration process.
         public ServerProfile(List<object> incoming)
         {
             // Each of these should be self-explanatory.
             GuildId = (ulong)incoming[0];
-            _name   = (string)incoming[1];
+            Name = (string)incoming[1];
 
-            _welcomeChannel = (ulong)incoming[2];
-            _welcomeRole    = (ulong)incoming[3];
+            WelcomeChannel = (ulong)incoming[2];
+            WelcomeRole    = (ulong)incoming[3];
 
-            _modChannel = (ulong)incoming[4];
+            ModChannel = (ulong)incoming[4];
 
             Prefix = (string)incoming[5];
 
             // These are boolean attributes.
-            _allowingInvites = (bool)incoming[6];
-            _allowingJoinMsg = (bool)incoming[7];
-            _allowingBansMsg = (bool)incoming[8];
-            _allowingVisible = (bool)incoming[9];
+            AllowingInvites = (bool)incoming[6];
+            AllowingJoinMsg = (bool)incoming[7];
+            AllowingBansMsg = (bool)incoming[8];
+            AllowingVisible = (bool)incoming[9];
         }
 
         // Data pass to the Database I/O. Acts as an inverse of the DB I/O's specified constructor.
@@ -69,15 +76,15 @@ namespace Jessbot.Entities
 
             // Add all values.
             outgoing.Add(GuildId);
-            outgoing.Add(_name);
-            outgoing.Add(_welcomeChannel);
-            outgoing.Add(_welcomeRole);
-            outgoing.Add(_modChannel);
+            outgoing.Add(Name);
+            outgoing.Add(WelcomeChannel);
+            outgoing.Add(WelcomeRole);
+            outgoing.Add(ModChannel);
             outgoing.Add(Prefix);
-            outgoing.Add(_allowingInvites);
-            outgoing.Add(_allowingJoinMsg);
-            outgoing.Add(_allowingBansMsg);
-            outgoing.Add(_allowingVisible);
+            outgoing.Add(AllowingInvites);
+            outgoing.Add(AllowingJoinMsg);
+            outgoing.Add(AllowingBansMsg);
+            outgoing.Add(AllowingVisible);
 
             // Package is ready. Send.
             return outgoing;

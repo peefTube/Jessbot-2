@@ -6,6 +6,8 @@ using Discord.Rest;
 using Colorful;
 using Console = Colorful.Console;
 
+using Interactivity;
+
 using System;
 using System.Timers;
 using System.Collections.Generic;
@@ -89,7 +91,10 @@ namespace Jessbot
             { "UTC-06:00", new TimeSpan(-6, 0, 0) },   { "UTC-07:00", new TimeSpan(-7, 0, 0) },
             { "UTC-08:00", new TimeSpan(-8, 0, 0) },   { "UTC-09:00", new TimeSpan(-9, 0, 0) },
             { "UTC-09:30", new TimeSpan(-9, -30, 0) }, { "UTC-10:00", new TimeSpan(-10, 0, 0) },
-            { "UTC-11:00", new TimeSpan(-11, 0, 0) },  { "UTC-12:00", new TimeSpan(-12, 0, 0) }
+            { "UTC-11:00", new TimeSpan(-11, 0, 0) },  { "UTC-12:00", new TimeSpan(-12, 0, 0) },
+
+            // Alternative zero values
+            { "UTC±00:00", TimeSpan.Zero }, { "UTC+00:00", TimeSpan.Zero }
         };
 
         #region PROGRAM
@@ -159,6 +164,9 @@ namespace Jessbot
             Logger.InitService(ServiceType.Messaging);
             Logger.InitService(ServiceType.Registry);
             Logger.InitService(ServiceType.Converter);
+            Logger.InitService(ServiceType.Experience);
+            Logger.InitService(ServiceType.Economy);
+            Logger.InitService(ServiceType.Inventory);
 
             #endregion
             Logger.InitStatus(false, true, InitType.Inject);
@@ -225,11 +233,15 @@ namespace Jessbot
             return new ServiceCollection()
                 .AddSingleton(client)
                 .AddSingleton(commandSys)
+                .AddSingleton(new InteractivityService(client, TimeSpan.FromSeconds(20)))
                 .AddSingleton<DatabaseService>()
                 .AddSingleton<MessageService>()
                 .AddSingleton<ParserService>()
                 .AddSingleton<RegistrationService>()
                 .AddSingleton<ConversionService>()
+                .AddSingleton<ExperienceService>()
+                .AddSingleton<EconomyService>()
+                .AddSingleton<InventoryService>()
                 .BuildServiceProvider();
         }
 
@@ -247,12 +259,21 @@ namespace Jessbot
 
             // This will tell the bot to pass the message to a message handling service.
             _jessbot.MessageReceived += MessagePassAsync;
+
+            // This will tell the bot to pass any completed command to a command error handling service.
+            _commands.CommandExecuted += CommandResultPassAsync;
         }
 
-        // This passes the
+        // This passes the message into its respective service.
         private async Task MessagePassAsync(SocketMessage msg)
         {
             await _services.GetRequiredService<MessageService>().Receiver(msg);
+        }
+
+        // This passes the command results into their respective service.
+        private async Task CommandResultPassAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
+        {
+            await _services.GetRequiredService<ParserService>().PostExecutionAsync(command, context, result);
         }
 
         #region READY

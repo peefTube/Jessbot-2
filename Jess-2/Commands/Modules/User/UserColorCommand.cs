@@ -6,6 +6,9 @@ using Discord.Rest;
 using Colorful;
 using Console = Colorful.Console;
 
+using Interactivity;
+using Interactivity.Pagination;
+
 using System;
 using System.Timers;
 using System.Collections.Generic;
