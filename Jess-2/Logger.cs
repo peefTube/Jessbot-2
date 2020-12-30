@@ -111,9 +111,21 @@ namespace Jessbot
                 case ServiceType.Registry:
                     serviceName = "Registration Service";
                     break;
-                // The registration service is being initialized.
+                // The conversion service is being initialized.
                 case ServiceType.Converter:
                     serviceName = "Conversion Service";
+                    break;
+                // The experience handling service is being initialized.
+                case ServiceType.Experience:
+                    serviceName = "Experience Handling Service";
+                    break;
+                // The economy handling service is being initialized.
+                case ServiceType.Economy:
+                    serviceName = "Economy Handling Service";
+                    break;
+                // The inventory handling service is being initialized.
+                case ServiceType.Inventory:
+                    serviceName = "Inventory Handling Service";
                     break;
             }
 
@@ -323,6 +335,9 @@ namespace Jessbot
         Messaging,
         Registry,
         Converter,
+        Experience,
+        Economy,
+        Inventory,
     }
 
     public enum InitType

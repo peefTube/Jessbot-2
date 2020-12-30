@@ -235,11 +235,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\CoreContext.cs" />
+    <Compile Include="Commands\Modules\Admin\ServerRegistryCommand.cs" />
+    <Compile Include="Commands\Modules\MiscModule.cs" />
+    <Compile Include="Commands\Modules\AdminModule.cs" />
     <Compile Include="Commands\Modules\UserModule.cs" />
+    <Compile Include="Commands\Modules\User\UserUTCCommand.cs" />
     <Compile Include="Commands\Modules\User\UserColorCommand.cs" />
     <Compile Include="Commands\Modules\User\UserProfileCommand.cs" />
     <Compile Include="Entities\ServerProfile.cs" />
     <Compile Include="Entities\UserProfiles.cs" />
+    <Compile Include="Services\InventoryService.cs" />
+    <Compile Include="Services\EconomyService.cs" />
+    <Compile Include="Services\ExperienceService.cs" />
     <Compile Include="StartupSettings.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Commands\CoreModule.cs" />

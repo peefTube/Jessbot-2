@@ -27,7 +27,7 @@ using Jessbot.Services;
 
 namespace Jessbot.Commands.Modules
 {
-    public sealed partial class UserModule : CoreModule
+    public sealed partial class AdminModule : CoreModule
     {
     }
 }

@@ -98,6 +98,7 @@ namespace Jessbot.Entities
         public Dictionary<ulong, bool> Unlocks    = new Dictionary<ulong, bool>();
 
         // Empty constructor. Will initialize everything to its default value.
+        // You will modify the values on the fly and upon loading.
         public ExpProfile()
         {
             // All will be set to false since they will be set true over time or upon loading.
@@ -113,15 +114,9 @@ namespace Jessbot.Entities
             Properties.Add(08, false);
             Properties.Add(09, false);
 
-            // Initialize some unlocks.
+            // Initialize the unlocks.
             Unlocks.Add(2, false); // Unlocks for level two.
             Unlocks.Add(5, false); // Unlocks for level five.
-        }
-
-        // I/O constructor. Will initialize everything from existing data.
-        public ExpProfile(List<object> incoming)
-        {
-            // TODO: Write me!
         }
     }
 
@@ -131,6 +126,7 @@ namespace Jessbot.Entities
         public Dictionary<ulong, bool> Tiers      = new Dictionary<ulong, bool>();
 
         // Empty constructor. Will initialize everything to its default value.
+        // You will modify the values on the fly and upon loading.
         public EconProfile()
         {
             // All will be set to false since they will be set true over time or upon loading.
@@ -145,16 +141,10 @@ namespace Jessbot.Entities
             Properties.Add(07, false);
             Properties.Add(08, false);
             Properties.Add(09, false);
-
-            // Initialize some tiers.
+          
+            // Initialize the tiers.
             Tiers.Add(1, false); // Tier One
             Tiers.Add(2, false); // Tier Two
-        }
-
-        // I/O constructor. Will initialize everything from existing data.
-        public EconProfile(List<object> incoming)
-        {
-            // TODO: Write me!
         }
     }
 
@@ -165,6 +155,7 @@ namespace Jessbot.Entities
         public Dictionary<ulong, BigInteger> RM_RAWMATS     = new Dictionary<ulong, BigInteger>();
 
         // Empty constructor. Will initialize everything to its default value.
+        // You will modify the values on the fly and upon loading.
         public InvProfile()
         {
             // Initialize tools.
@@ -181,13 +172,6 @@ namespace Jessbot.Entities
             RM_RAWMATS.Add(00, 0); // Gold Nugget, Tiny (RM00)
             RM_RAWMATS.Add(01, 0); // Gold Nugget, Small (RM01)
         }
-
-        // I/O constructor. Will initialize everything from existing data.
-        public InvProfile(List<object> incoming)
-        {
-            // TODO: Write me!
-        }
-    }
 
     public enum SubProfs
     {
