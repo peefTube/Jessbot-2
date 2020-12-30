@@ -141,7 +141,7 @@ namespace Jessbot.Entities
             Properties.Add(07, false);
             Properties.Add(08, false);
             Properties.Add(09, false);
-
+          
             // Initialize the tiers.
             Tiers.Add(1, false); // Tier One
             Tiers.Add(2, false); // Tier Two
@@ -172,7 +172,6 @@ namespace Jessbot.Entities
             RM_RAWMATS.Add(00, 0); // Gold Nugget, Tiny (RM00)
             RM_RAWMATS.Add(01, 0); // Gold Nugget, Small (RM01)
         }
-    }
 
     public enum SubProfs
     {

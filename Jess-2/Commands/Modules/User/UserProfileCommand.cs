@@ -155,6 +155,7 @@ namespace Jessbot.Commands.Modules
 
                     // Last lines, these are necessary to perform here.
                     ProfEmbed.AddField("Main Pages", $"**Overview\nExperience\nEconomy\nInventory**");
+                    ProfEmbed.AddField("Main Pages", $"**Home\nExperience\nEconomy\nInventory**");
                     ProfEmbed.AddField("Subpages", $"N/A");
                     break;
                 case "overview":
@@ -175,6 +176,7 @@ namespace Jessbot.Commands.Modules
 
                     // Last line, this is necessary to perform here.
                     ProfEmbed.AddField("Main Pages", $"**Overview\nExperience\nEconomy\nInventory**");
+                    ProfEmbed.AddField("Main Pages", $"**Home\nExperience\nEconomy\nInventory**");
                     break;
                 default:
                     // User did a dum-dum
@@ -394,7 +396,7 @@ namespace Jessbot.Commands.Modules
                     ProfEmbed.AddField("Main Pages", $"**Overview\nExperience\nEconomy\nInventory**");
                     break;
             }
-
+          
             // Final elements.
             ProfEmbed.ThumbnailUrl = RawTargetUser.GetAvatarUrl();
             ProfEmbed.Color = TargetUserPrefColor;

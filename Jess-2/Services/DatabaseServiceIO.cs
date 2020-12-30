@@ -197,11 +197,11 @@ namespace Jessbot.Services
                         
                         // Passer data is ready, use it!
                         SubProfiles.Add(EcnProfPass);
-
+                      
                         // ---------------------- WHITESPACE FOR READABILITY ---------------------- 
 
                         // Handling inventory subprofile.
-
+                      
                         // TODO: Collect inventory from file
 
                         // Passer data is ready, use it!
@@ -266,7 +266,7 @@ namespace Jessbot.Services
                     file.WriteLine((bool)_guilds[i].DataPass()[7]);         // i = 16
                     file.WriteLine("USERBAN MESSAGE TOGGLING:");            // i = 17
                     file.WriteLine((bool)_guilds[i].DataPass()[8]);         // i = 18
-                    file.WriteLine("VISIBILITY TOGGLING:");                    // i = 19
+                    file.WriteLine("VISIBILITY TOGGLING:");                 // i = 19
                     file.WriteLine((bool)_guilds[i].DataPass()[9]);         // i = 20
                     file.WriteLine("");                                     // i = 21
                 }
@@ -314,7 +314,7 @@ namespace Jessbot.Services
                         string RGB = _users[i].PrefColor.R + "," + _users[i].PrefColor.G + "," + _users[i].PrefColor.B;
 
                         // Write the file.
-                        uFile.WriteLine($"====={usernameTitle}=====");                                            // i = 0
+                        uFile.WriteLine($"====={usernameTitle}=====");                                       // i = 0
                         uFile.WriteLine("USER ID:");                                                         // i = 1
                         uFile.WriteLine(i);                                                                  // i = 2
                         uFile.WriteLine("EXPERIENCE VALUE:");                                                // i = 3
