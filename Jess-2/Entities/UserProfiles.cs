@@ -150,9 +150,9 @@ namespace Jessbot.Entities
 
     public class InvProfile
     {
-        public Dictionary<ulong, BigInteger> TL_TOOLS       = new Dictionary<ulong, BigInteger>();
+        public Dictionary<ulong, BigInteger> TL_TOOLS = new Dictionary<ulong, BigInteger>();
         public Dictionary<ulong, BigInteger> FDS_FOODSTUFFS = new Dictionary<ulong, BigInteger>();
-        public Dictionary<ulong, BigInteger> RM_RAWMATS     = new Dictionary<ulong, BigInteger>();
+        public Dictionary<ulong, BigInteger> RM_RAWMATS = new Dictionary<ulong, BigInteger>();
 
         // Empty constructor. Will initialize everything to its default value.
         // You will modify the values on the fly and upon loading.
@@ -172,6 +172,7 @@ namespace Jessbot.Entities
             RM_RAWMATS.Add(00, 0); // Gold Nugget, Tiny (RM00)
             RM_RAWMATS.Add(01, 0); // Gold Nugget, Small (RM01)
         }
+    }
 
     public enum SubProfs
     {
