@@ -35,6 +35,8 @@ namespace Jessbot.Entities
 
         public string Prefix = "JR.";  // The prefix for commands. Defaults to this value if not set.
 
+        public List<ulong> RequiredReads = new List<ulong>(); // Required reading for this guild.
+
         public bool AllowingInvites = false; // Toggles invite creation functionality.
         public bool AllowingJoinMsg = true;  // Toggles join and leave messages.
         public bool AllowingBansMsg = true;  // Toggles ban messages.
@@ -85,6 +87,7 @@ namespace Jessbot.Entities
             outgoing.Add(AllowingJoinMsg);
             outgoing.Add(AllowingBansMsg);
             outgoing.Add(AllowingVisible);
+            outgoing.Add(RequiredReads);
 
             // Package is ready. Send.
             return outgoing;

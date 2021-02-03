@@ -206,6 +206,9 @@ namespace Jessbot
             Logger.AsyncStatus(true, MainAsyncS.MessagesInit);
             Logger.AsyncStatus(false, MainAsyncS.Login);
 
+            // Initialize user-guild interfacing logic.
+            UGInterfacingLogicInit();
+
             // Login and start!
             await _jessbot.LoginAsync(TokenType.Bot, File.ReadAllText("token.ptsfx"));
             await _jessbot.StartAsync();
@@ -242,6 +245,7 @@ namespace Jessbot
                 .AddSingleton<ExperienceService>()
                 .AddSingleton<EconomyService>()
                 .AddSingleton<InventoryService>()
+                .AddSingleton<UserGuildInterfaceService>()
                 .BuildServiceProvider();
         }
 
@@ -262,6 +266,13 @@ namespace Jessbot
 
             // This will tell the bot to pass any completed command to a command error handling service.
             _commands.CommandExecuted += CommandResultPassAsync;
+        }
+
+        private void UGInterfacingLogicInit()
+        {
+            _jessbot.UserJoined += _services.GetRequiredService<UserGuildInterfaceService>().Joined;
+            _jessbot.UserBanned += _services.GetRequiredService<UserGuildInterfaceService>().Banned;
+            _jessbot.UserLeft += _services.GetRequiredService<UserGuildInterfaceService>().Left;
         }
 
         // This passes the message into its respective service.

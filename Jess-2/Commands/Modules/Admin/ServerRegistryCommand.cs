@@ -729,6 +729,9 @@ namespace Jessbot.Commands.Modules
             Popup.Fields.Clear();
             PopupMid.Fields.Clear();
 
+            // Additional details which may not have been checked.
+            Passes.Add(ServerPass.RequiredReads);
+
             // Finalize the new serverdata, and hold the old data before passing the new into the passer.
             List<object> ServerData = new List<object> { Context.Guild.Id, Context.Guild.Name };
             foreach (object o in Passes)

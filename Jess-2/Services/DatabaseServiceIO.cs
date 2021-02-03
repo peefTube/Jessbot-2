@@ -75,9 +75,20 @@ namespace Jessbot.Services
                         DataPass.Add(bool.Parse(ServerDatabaseLoad[i + 20]));
                     }
 
-                    // Add to the guild database and prepare to start over.
+                    // Add to the guild database and prepare to collect subdata and start over.
                     _guilds.Add((ulong)DataPass[0], new ServerProfile(DataPass));
+                    ulong freshGuild = (ulong)DataPass[0];
                     DataPass.Clear();
+
+                    // Collect custom file data.
+                    string ServerDir = Path.Combine(BotPathing, "Debug/ADV_HIERARCHY/GUILDS/" + ServerDatabaseLoad[i + 2].ToString());
+
+                    // Required reading.
+                    string[] RequiredReadsLoad = File.ReadAllLines($"{ServerDir}/REQUIRED_READING.ptsfx");
+                    for (int j = 0; j < RequiredReadsLoad.Length; j += 1)
+                    {
+                        _guilds[freshGuild].RequiredReads.Add(ulong.Parse(RequiredReadsLoad[j]));
+                    }
                 }
             }
 
@@ -247,6 +258,15 @@ namespace Jessbot.Services
                 // be passed back pretty simply.
                 foreach (ulong i in _guilds.Keys)
                 {
+                    // You should update the server name, just in case.
+                    string guildname = "";
+                    try
+                    { guildname = $"{_bot.GetGuild(i).Name}"; }
+                    catch (Exception)
+                    { guildname = $"COULD NOT FIND"; }
+                    _guilds[i].Name = guildname;
+
+                    // Now save the server data.
                     file.WriteLine("=====REGISTERED SERVER=====");          // i = 0
                     file.WriteLine("SERVER ID:");                           // i = 1
                     file.WriteLine((ulong)_guilds[i].DataPass()[0]);        // i = 2
@@ -269,6 +289,21 @@ namespace Jessbot.Services
                     file.WriteLine("VISIBILITY TOGGLING:");                 // i = 19
                     file.WriteLine((bool)_guilds[i].DataPass()[9]);         // i = 20
                     file.WriteLine("");                                     // i = 21
+
+                    // Server subdata saving.
+                    string ServerDir = Path.Combine(BotPathing, "Debug/ADV_HIERARCHY/GUILDS/" + (ulong)_guilds[i].DataPass()[0]);
+                    System.IO.Directory.CreateDirectory(ServerDir);
+
+                    // Required reading.
+                    List<ulong> RequiredReading = (List<ulong>)_guilds[i].DataPass()[10];
+                    File.Delete($"{ServerDir}/REQUIRED_READING.ptsfx");
+                    using (System.IO.StreamWriter reqreadFile = new System.IO.StreamWriter($"{ServerDir}/REQUIRED_READING.ptsfx", true))
+                    {
+                        for (int x = 0; x < RequiredReading.Count; x++)
+                        {
+                            reqreadFile.WriteLine(RequiredReading[x]);
+                        }
+                    }
                 }
             }
 

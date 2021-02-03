@@ -247,6 +247,7 @@
     <Compile Include="Services\InventoryService.cs" />
     <Compile Include="Services\EconomyService.cs" />
     <Compile Include="Services\ExperienceService.cs" />
+    <Compile Include="Services\UserGuildInterfaceService.cs" />
     <Compile Include="StartupSettings.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Commands\CoreModule.cs" />
