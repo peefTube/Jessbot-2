@@ -157,7 +157,7 @@ namespace Jessbot.Services
             else
             { return; }
             ulong _msgChannelRaw = _guild.WelcomeChannel;
-
+            
             SocketGuildUser fulluser = guild.GetUser(user.Id);
 
             // Set up embed.

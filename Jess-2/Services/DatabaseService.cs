@@ -29,6 +29,9 @@ namespace Jessbot.Services
         private Dictionary<ulong, ServerProfile> _guilds = new Dictionary<ulong, ServerProfile>();
         private Dictionary<ulong, UserProfile> _users    = new Dictionary<ulong, UserProfile>();
 
+        // You only need this during testing.
+        // private Dictionary<ulong, UserProfile> _usertest = new Dictionary<ulong, UserProfile>();
+
         private readonly DiscordSocketClient _bot;
 
         // Builds the database from the DI.

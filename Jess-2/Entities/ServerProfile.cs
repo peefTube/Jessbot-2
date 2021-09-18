@@ -41,7 +41,10 @@ namespace Jessbot.Entities
         public bool AllowingJoinMsg = true;  // Toggles join and leave messages.
         public bool AllowingBansMsg = true;  // Toggles ban messages.
         public bool AllowingVisible = true;  // Toggles visibility in the server directory.
-        
+
+        // Default, empty constructor.
+        public ServerProfile() { }
+
         // Default, empty constructor. Everything is pre-set, minus server ID and name. Pass these in.
         public ServerProfile(ulong ID, string NamePass)
         {

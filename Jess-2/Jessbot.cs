@@ -23,6 +23,8 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 using Jessbot.Services;
+using System.Text.Json;
+using Newtonsoft.Json;
 
 /* ======================================== *
  *                                          *
@@ -133,7 +135,9 @@ namespace Jessbot
                 LogLevel = LogSeverity.Info,
 
                 // Sets the MessageCacheSize.
-                MessageCacheSize = 50,
+                MessageCacheSize = 256,
+
+                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildPresences | GatewayIntents.GuildMembers | GatewayIntents.GuildBans | GatewayIntents.GuildEmojis | GatewayIntents.GuildMessages | GatewayIntents.DirectMessages | GatewayIntents.DirectMessageReactions
             });
 
             // Log to console.
@@ -236,7 +240,7 @@ namespace Jessbot
             return new ServiceCollection()
                 .AddSingleton(client)
                 .AddSingleton(commandSys)
-                .AddSingleton(new InteractivityService(client, TimeSpan.FromSeconds(20)))
+                .AddSingleton(new InteractivityService(client, new InteractivityConfig()))
                 .AddSingleton<DatabaseService>()
                 .AddSingleton<MessageService>()
                 .AddSingleton<ParserService>()
@@ -246,6 +250,7 @@ namespace Jessbot
                 .AddSingleton<EconomyService>()
                 .AddSingleton<InventoryService>()
                 .AddSingleton<UserGuildInterfaceService>()
+                .AddSingleton<NamingService>()
                 .BuildServiceProvider();
         }
 
