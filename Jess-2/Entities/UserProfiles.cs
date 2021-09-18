@@ -22,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Jessbot;
 using Jessbot.Commands.Modules;
 using Jessbot.Commands;
+
 using System.Text.Json.Serialization;
 
 namespace Jessbot.Entities
@@ -37,6 +38,9 @@ namespace Jessbot.Entities
 
         public ulong Level = 0; // Unsigned long integer value for containing user's levelling data.
         public string UserUTC = "UTC-00:00"; // User-designated UTC code. Defaults to UTC itself.
+
+        // User's recognized nicknames.
+        public Dictionary<ulong, string> AliasList = new Dictionary<ulong, string>();
 
         // User-designated preferred color. Defaults to black.
         [JsonPropertyName("PrefColor")]

@@ -61,6 +61,9 @@ namespace Jessbot.Services
                     Level = Curr.Level,
                     UserUTC = Curr.UserUTC,
 
+                    // Known nicknames!
+                    AliasList = Curr.AliasList,
+
                     // Preferred color!
                     PrefColor = Curr.PrefColor.ToColor(),
 
@@ -97,6 +100,9 @@ namespace Jessbot.Services
 
         [JsonPropertyName("Level")]
         public ulong Level { get; set; }
+        
+        [JsonPropertyName("AliasList")]
+        public Dictionary<ulong, string> AliasList { get; set; }
 
         [JsonPropertyName("PrefColor")]
         public ColorNucleus PrefColor { get; set; }

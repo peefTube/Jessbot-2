@@ -169,9 +169,10 @@ namespace Jessbot.Services
                         var result = await _cmd.ExecuteAsync(context, _pos, _services);
                     }
 
-                    // Before saving, refresh all username information in the database.
+                    // Before saving, use the Naming Service to refresh any username information.
                     // This should *hopefully* ensure all user information is up-to-date.
                     _naming.RefreshNameData();
+                    _naming.RefreshAliasList();
 
                     // Everything is finished! Set any necessary values, 
                     // then save the database to prevent any issues.

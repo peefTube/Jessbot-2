@@ -158,7 +158,14 @@ namespace Jessbot.Services
             { return; }
             ulong _msgChannelRaw = _guild.WelcomeChannel;
             
-            SocketGuildUser fulluser = guild.GetUser(user.Id);
+            // No longer works!
+            // SocketGuildUser fulluser = guild.GetUser(user.Id);
+            
+            string presentAlias = null;
+            try
+            { presentAlias = _db.GetUsers()[user.Id].AliasList[guild.Id]; }
+            catch (Exception)
+            { presentAlias = null; }
 
             // Set up embed.
             EmbedBuilder Banhammer = new EmbedBuilder
@@ -168,10 +175,10 @@ namespace Jessbot.Services
                 Footer = new EmbedFooterBuilder { Text = $"Banned: {DateTimeOffset.UtcNow}" }
             };
 
-            if (fulluser.Nickname != null)
-            { Banhammer.AddField("Hammer Time!", $"**{fulluser.Nickname}** has been... let's put it this way: forcibly, but justifiably, removed."); }
+            if (presentAlias != null)
+            { Banhammer.AddField("Hammer Time!", $"**{presentAlias}** has been... let's put it this way: forcibly, but justifiably, removed."); }
             else
-            { Banhammer.AddField("Hammer Time!", $"**{fulluser.Username}** has been... let's put it this way: forcibly, but justifiably, removed."); }
+            { Banhammer.AddField("Hammer Time!", $"**{user.Username}** has been... let's put it this way: forcibly, but justifiably, removed."); }
 
             if (_msgChannelRaw != 0 && _bot.GetGuild(guild.Id).TextChannels.Contains(_bot.GetChannel(_msgChannelRaw)) && _guild.AllowingBansMsg)
             {
@@ -180,14 +187,14 @@ namespace Jessbot.Services
             }
 
             if (!user.IsBot)
-            { await user.SendMessageAsync($"You were banned from **{guild.Name}**. Reason for ban: {(await guild.GetBanAsync(fulluser)).Reason}"); }
+            { await user.SendMessageAsync($"You were banned from **{guild.Name}**. Reason for ban: {(await guild.GetBanAsync(user)).Reason}"); }
 
             // Send a message to the moderation channel, if the server has one.
             if (_guild.ModChannel != 0 && _bot.GetGuild(guild.Id).TextChannels.Contains(_bot.GetChannel(_guild.ModChannel)))
             {
                 SocketTextChannel _msgChannel = _bot.GetGuild(guild.Id).GetTextChannel(_guild.ModChannel);
                 await _msgChannel.SendMessageAsync($"**{user.Username}#{user.Discriminator} was banned! Please read the below messages for further details.**\n" +
-                    $"Reason for ban: {(await guild.GetBanAsync(fulluser)).Reason}");
+                    $"Reason for ban: {(await guild.GetBanAsync(user)).Reason}");
             }
         }
 
@@ -200,6 +207,12 @@ namespace Jessbot.Services
             else
             { return; }
             ulong _msgChannelRaw = _guild.WelcomeChannel;
+
+            string presentAlias = null;
+            try
+            { presentAlias = _db.GetUsers()[user.Id].AliasList[user.Guild.Id]; }
+            catch (Exception)
+            { presentAlias = null; }
 
             var isBanned = user.Guild.GetBanAsync(user).Result;
             if (isBanned == null)
@@ -218,8 +231,8 @@ namespace Jessbot.Services
                     Footer = new EmbedFooterBuilder { Text = $"Left: {DateTimeOffset.UtcNow}" }
                 };
 
-                if (user.Nickname != null)
-                { Leaving.AddField("Farewell!", $"**{user.Nickname}** has decided to leave."); }
+                if (presentAlias != null)
+                { Leaving.AddField("Farewell!", $"**{presentAlias}** has decided to leave."); }
                 else
                 { Leaving.AddField("Farewell!", $"**{user.Username}** has decided to leave."); }
 
@@ -234,12 +247,12 @@ namespace Jessbot.Services
             if (_guild.ModChannel != 0 && _bot.GetGuild(user.Guild.Id).TextChannels.Contains(_bot.GetChannel(_guild.ModChannel)))
             {
                 SocketTextChannel _msgChannel = _bot.GetGuild(user.Guild.Id).GetTextChannel(_guild.ModChannel);
-                if (user.Nickname == null)
+                if (presentAlias == null)
                 { await _msgChannel.SendMessageAsync($"{user.Username}#{user.Discriminator} left at {DateTimeOffset.UtcNow}."); }
                 else
                 {
                     await _msgChannel.SendMessageAsync($"{user.Username}#{user.Discriminator} left at {DateTimeOffset.UtcNow}.\n" +
-                        $"They had the nickname '{user.Nickname}'.");
+                        $"They had the nickname '{presentAlias}'.");
                 }
             }
         }

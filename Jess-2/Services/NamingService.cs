@@ -61,5 +61,44 @@ namespace Jessbot.Services
                 { userlist[quid].Username = "unidentified#0000"; }
             }
         }
+
+        public void RefreshAliasList()
+        {
+            // Userlist.
+            Dictionary<ulong, UserProfile> userlist = _db.GetUsers();
+
+            // Run through all registered users.
+            foreach (ulong quid in userlist.Keys)
+            {
+                // Temporary nickname list.
+                Dictionary<ulong, string> tempAliasList = new Dictionary<ulong, string>();
+
+                // Run through all guilds.
+                // Definition: qg is "query guild"
+                foreach (SocketGuild qg in _bot.Guilds)
+                {
+                    SocketGuildUser thisuser = null;
+
+                    foreach (SocketGuildUser user in qg.Users)
+                    {
+                        if (user.Id == quid)
+                        { thisuser = user; break; }
+                        else
+                        { thisuser = null; }
+                    }
+
+                    if (thisuser != null)
+                    {
+                        try
+                        { tempAliasList.Add(qg.Id, thisuser.Nickname); }
+                        catch (Exception)
+                        { tempAliasList.Add(qg.Id, null); }
+                    }
+                }
+
+                // Set the alias list for this user.
+                userlist[quid].AliasList = tempAliasList;
+            }
+        }
     }
 }
