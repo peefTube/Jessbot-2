@@ -127,6 +127,14 @@ namespace Jessbot
                 case ServiceType.Inventory:
                     serviceName = "Inventory Handling Service";
                     break;
+                // The guild interfacing service is being initialized.
+                case ServiceType.GuildInterfacer:
+                    serviceName = "User-Guild Interfacing Service";
+                    break;
+                // The naming service is being initialized.
+                case ServiceType.NameHandler:
+                    serviceName = "Name & Alias Handling Service";
+                    break;
             }
 
             Console.WriteLine($"Initializing {serviceName}...", Color.DarkBlue);
@@ -294,6 +302,11 @@ namespace Jessbot
                     else
                     { Console.WriteLine($"Registration check complete. Proceeding...", Color.Teal); }
                     break;
+                // Naming service has completed a refresh. No check needed.
+                case MsgStep.NameServRefreshed:
+                    // Log message.
+                    Console.WriteLine($"[NAMING] Data refreshed.", Color.DarkBlue);
+                    break;
             }
         }
 
@@ -338,6 +351,8 @@ namespace Jessbot
         Experience,
         Economy,
         Inventory,
+        GuildInterfacer,
+        NameHandler,
     }
 
     public enum InitType
@@ -353,6 +368,7 @@ namespace Jessbot
         IsBot,
         IsSystem,
         CheckReg,
+        NameServRefreshed,
     }
 
     #endregion

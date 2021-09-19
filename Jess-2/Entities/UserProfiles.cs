@@ -20,25 +20,44 @@ using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 
 using Jessbot;
+using Jessbot.Commands.Modules;
+using Jessbot.Commands;
+
+using System.Text.Json.Serialization;
 
 namespace Jessbot.Entities
 {
     public class UserProfile
     {
+        public string Username = "null#0000";   // Username. Will always refresh upon a new message.
+
         public ulong UserID = 0; // Discord-side identifier value for this user.
 
         public BigInteger Experience = 0; // Massive integer value for containing experience data.
         public BigInteger Balance = 0;    // Massive integer value for containing wallet balance data.
 
         public ulong Level = 0; // Unsigned long integer value for containing user's levelling data.
-
-        public Color PrefColor = new Color(0, 0, 0); // User-designated preferred color. Defaults to black.
         public string UserUTC = "UTC-00:00"; // User-designated UTC code. Defaults to UTC itself.
 
+        // User's recognized nicknames.
+        public Dictionary<ulong, string> AliasList = new Dictionary<ulong, string>();
+
+        // User-designated preferred color. Defaults to black.
+        [JsonPropertyName("PrefColor")]
+        public Color PrefColor = new Color(0, 0, 0);
+
         // Subprofiles.
+        [JsonPropertyName("ExpData")]
         public ExpProfile ExpData = new ExpProfile();    // Experience subprofile.
+
+        [JsonPropertyName("EconData")]
         public EconProfile EconData = new EconProfile(); // Economy subprofile.
+
+        [JsonPropertyName("Inventory")]
         public InvProfile Inventory = new InvProfile();  // Inventory subprofile.
+
+        // Default constructor.
+        public UserProfile() { }
 
         // Constructor for Database I/O. Users are automatically registered
         // so new profile information (Exp, Econ, Inv) will have to be handled
@@ -62,8 +81,8 @@ namespace Jessbot.Entities
 
             // This loads the subprofiles in and replaces the defaults with the new ones.
             List<object> subprofiles = (List<object>)incoming[6];
-            ExpData   = (ExpProfile)subprofiles[0];
-            EconData  = (EconProfile)subprofiles[1];
+            ExpData = (ExpProfile)subprofiles[0];
+            EconData = (EconProfile)subprofiles[1];
             Inventory = (InvProfile)subprofiles[2];
         }
 

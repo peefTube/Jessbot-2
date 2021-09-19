@@ -23,6 +23,8 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 using Jessbot.Services;
+using System.Text.Json;
+using Newtonsoft.Json;
 
 /* ======================================== *
  *                                          *
@@ -133,7 +135,9 @@ namespace Jessbot
                 LogLevel = LogSeverity.Info,
 
                 // Sets the MessageCacheSize.
-                MessageCacheSize = 50,
+                MessageCacheSize = 256,
+
+                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildPresences | GatewayIntents.GuildMembers | GatewayIntents.GuildBans | GatewayIntents.GuildEmojis | GatewayIntents.GuildMessages | GatewayIntents.GuildMessageReactions | GatewayIntents.DirectMessages | GatewayIntents.DirectMessageReactions
             });
 
             // Log to console.
@@ -167,6 +171,8 @@ namespace Jessbot
             Logger.InitService(ServiceType.Experience);
             Logger.InitService(ServiceType.Economy);
             Logger.InitService(ServiceType.Inventory);
+            Logger.InitService(ServiceType.GuildInterfacer);
+            Logger.InitService(ServiceType.NameHandler);
 
             #endregion
             Logger.InitStatus(false, true, InitType.Inject);
@@ -206,6 +212,9 @@ namespace Jessbot
             Logger.AsyncStatus(true, MainAsyncS.MessagesInit);
             Logger.AsyncStatus(false, MainAsyncS.Login);
 
+            // Initialize user-guild interfacing logic.
+            UGInterfacingLogicInit();
+
             // Login and start!
             await _jessbot.LoginAsync(TokenType.Bot, File.ReadAllText("token.ptsfx"));
             await _jessbot.StartAsync();
@@ -230,10 +239,12 @@ namespace Jessbot
         // Modified heavily, to work as needed for this code.
         private static IServiceProvider ServiceInjector(DiscordSocketClient client, CommandService commandSys)
         {
+            InteractivityConfig configuration = new InteractivityConfig(){ DefaultTimeout = TimeSpan.FromSeconds(20), RunOnGateway = true };
+
             return new ServiceCollection()
                 .AddSingleton(client)
                 .AddSingleton(commandSys)
-                .AddSingleton(new InteractivityService(client, TimeSpan.FromSeconds(20)))
+                .AddSingleton(new InteractivityService(client, configuration))
                 .AddSingleton<DatabaseService>()
                 .AddSingleton<MessageService>()
                 .AddSingleton<ParserService>()
@@ -242,6 +253,8 @@ namespace Jessbot
                 .AddSingleton<ExperienceService>()
                 .AddSingleton<EconomyService>()
                 .AddSingleton<InventoryService>()
+                .AddSingleton<UserGuildInterfaceService>()
+                .AddSingleton<NamingService>()
                 .BuildServiceProvider();
         }
 
@@ -262,6 +275,13 @@ namespace Jessbot
 
             // This will tell the bot to pass any completed command to a command error handling service.
             _commands.CommandExecuted += CommandResultPassAsync;
+        }
+
+        private void UGInterfacingLogicInit()
+        {
+            _jessbot.UserJoined += _services.GetRequiredService<UserGuildInterfaceService>().Joined;
+            _jessbot.UserBanned += _services.GetRequiredService<UserGuildInterfaceService>().Banned;
+            _jessbot.UserLeft += _services.GetRequiredService<UserGuildInterfaceService>().Left;
         }
 
         // This passes the message into its respective service.

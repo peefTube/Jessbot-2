@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Jessbot;
 using Jessbot.Entities;
+using Newtonsoft.Json;
 
 namespace Jessbot.Services
 {
@@ -42,6 +43,14 @@ namespace Jessbot.Services
             string DatabaseDirPath = Path.Combine(BotPathing, "Debug/ADV_HIERARCHY/DATABASES"); // Establish a directory path.
             if (Jessbot._loadGuilds)
             {
+                // Read from JSON.
+                _guilds = ReadServerDatabase($"{DatabaseDirPath}/server_database.json");
+
+                // DEPRECATED
+                // _guilds = JsonConvert.DeserializeObject<Dictionary<ulong, ServerProfile>>(File.ReadAllText($"{DatabaseDirPath}/server_database.json"));
+
+                #region DEPRECATED - SERVER LOAD
+                /*
                 string[] ServerDatabaseLoad = File.ReadAllLines($"{DatabaseDirPath}/JESSBOT_SERVER_DATABASE.ptsfx");
                 for (int i = 0; i < ServerDatabaseLoad.Length; i += 22)
                 {
@@ -75,10 +84,24 @@ namespace Jessbot.Services
                         DataPass.Add(bool.Parse(ServerDatabaseLoad[i + 20]));
                     }
 
-                    // Add to the guild database and prepare to start over.
+                    // Add to the guild database and prepare to collect subdata and start over.
                     _guilds.Add((ulong)DataPass[0], new ServerProfile(DataPass));
+                    ulong freshGuild = (ulong)DataPass[0];
                     DataPass.Clear();
+
+                    // Collect custom file data.
+                    string ServerDir = Path.Combine(BotPathing, "Debug/ADV_HIERARCHY/GUILDS/" + ServerDatabaseLoad[i + 2].ToString());
+
+                    // Required reading.
+                    string[] RequiredReadsLoad = File.ReadAllLines($"{ServerDir}/REQUIRED_READING.ptsfx");
+                    for (int j = 0; j < RequiredReadsLoad.Length; j += 1)
+                    {
+                        _guilds[freshGuild].RequiredReads.Add(ulong.Parse(RequiredReadsLoad[j]));
+                    }
                 }
+
+                */
+                #endregion
             }
 
             // Log to console.
@@ -88,6 +111,14 @@ namespace Jessbot.Services
             // Load in the user database, but only if told.
             if (Jessbot._loadUsers)
             {
+                // Read from JSON.
+                _users = ReadUserDatabase($"{DatabaseDirPath}/user_database.json");
+
+                // DEPRECATED
+                // _usertest = JsonConvert.DeserializeObject<Dictionary<ulong, UserProfile>>(File.ReadAllText($"{DatabaseDirPath}/user_database.json"));
+
+                #region DEPRECATED - USER LOAD
+                /*
                 string[] UserDatabaseLoad = File.ReadAllLines($"{DatabaseDirPath}/JESSBOT_USER_DATABASE.ptsfx");
                 for (int i = 0; i < UserDatabaseLoad.Length; i += 6)
                 {
@@ -220,6 +251,9 @@ namespace Jessbot.Services
                     DataPass.Clear();
                     SubProfiles.Clear();
                 }
+
+                */
+                #endregion
             }
 
             // Log to console.
@@ -228,6 +262,10 @@ namespace Jessbot.Services
 
         public void Save()
         {
+            // Package databases into a JSON format.
+            string json_guilds = JsonConvert.SerializeObject(_guilds, Formatting.Indented);
+            string json_users = JsonConvert.SerializeObject(_users, Formatting.Indented);
+
             // Ensure that a string for bot pathing is set up.
             string BotPathing = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
 
@@ -235,8 +273,23 @@ namespace Jessbot.Services
             string DatabaseDirPath = Path.Combine(BotPathing, "Debug/ADV_HIERARCHY/DATABASES");
             System.IO.Directory.CreateDirectory(DatabaseDirPath); // Create the database directory if it doesn't exist.
 
+            // Create a backup.
+            // If a backup already exists, delete that.
+            File.Delete($"{DatabaseDirPath}/server_database.json.bak");
+            File.Delete($"{DatabaseDirPath}/user_database.json.bak");
+
+            File.Copy($"{DatabaseDirPath}/server_database.json", $"{DatabaseDirPath}/server_database.json.bak");
+            File.Copy($"{DatabaseDirPath}/user_database.json", $"{DatabaseDirPath}/user_database.json.bak");
+
             // Server data saving.
             // Delete the file beforehand.
+            File.Delete($"{DatabaseDirPath}/server_database.json");
+
+            // Write to JSON.
+            System.IO.File.WriteAllText($"{DatabaseDirPath}/server_database.json", json_guilds);
+
+            #region DEPRECATED - SERVER DATA SAVING
+            /*
             File.Delete($"{DatabaseDirPath}/JESSBOT_SERVER_DATABASE.ptsfx");
 
             // Write the server data to a .ptsfx "database."
@@ -247,6 +300,15 @@ namespace Jessbot.Services
                 // be passed back pretty simply.
                 foreach (ulong i in _guilds.Keys)
                 {
+                    // You should update the server name, just in case.
+                    string guildname = "";
+                    try
+                    { guildname = $"{_bot.GetGuild(i).Name}"; }
+                    catch (Exception)
+                    { guildname = $"COULD NOT FIND"; }
+                    _guilds[i].Name = guildname;
+
+                    // Now save the server data.
                     file.WriteLine("=====REGISTERED SERVER=====");          // i = 0
                     file.WriteLine("SERVER ID:");                           // i = 1
                     file.WriteLine((ulong)_guilds[i].DataPass()[0]);        // i = 2
@@ -269,8 +331,36 @@ namespace Jessbot.Services
                     file.WriteLine("VISIBILITY TOGGLING:");                 // i = 19
                     file.WriteLine((bool)_guilds[i].DataPass()[9]);         // i = 20
                     file.WriteLine("");                                     // i = 21
+
+                    // Server subdata saving.
+                    string ServerDir = Path.Combine(BotPathing, "Debug/ADV_HIERARCHY/GUILDS/" + (ulong)_guilds[i].DataPass()[0]);
+                    System.IO.Directory.CreateDirectory(ServerDir);
+
+                    // Required reading.
+                    List<ulong> RequiredReading = (List<ulong>)_guilds[i].DataPass()[10];
+                    File.Delete($"{ServerDir}/REQUIRED_READING.ptsfx");
+                    using (System.IO.StreamWriter reqreadFile = new System.IO.StreamWriter($"{ServerDir}/REQUIRED_READING.ptsfx", true))
+                    {
+                        for (int x = 0; x < RequiredReading.Count; x++)
+                        {
+                            reqreadFile.WriteLine(RequiredReading[x]);
+                        }
+                    }
                 }
             }
+            */
+
+            #endregion
+
+            // User data saving.
+            // Delete the file beforehand.
+            File.Delete($"{DatabaseDirPath}/user_database.json");
+
+            // Write to JSON.
+            System.IO.File.WriteAllText($"{DatabaseDirPath}/user_database.json", json_users);
+
+            #region DEPRECATED - USER DATA SAVING
+            /*
 
             // User data saving.
             // Delete the file beforehand.
@@ -491,6 +581,9 @@ namespace Jessbot.Services
                     }
                 }
             }
+
+            */
+            #endregion
         }
     }
 }

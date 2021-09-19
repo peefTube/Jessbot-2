@@ -35,11 +35,16 @@ namespace Jessbot.Entities
 
         public string Prefix = "JR.";  // The prefix for commands. Defaults to this value if not set.
 
+        public List<ulong> RequiredReads = new List<ulong>(); // Required reading for this guild.
+
         public bool AllowingInvites = false; // Toggles invite creation functionality.
         public bool AllowingJoinMsg = true;  // Toggles join and leave messages.
         public bool AllowingBansMsg = true;  // Toggles ban messages.
         public bool AllowingVisible = true;  // Toggles visibility in the server directory.
-        
+
+        // Default, empty constructor.
+        public ServerProfile() { }
+
         // Default, empty constructor. Everything is pre-set, minus server ID and name. Pass these in.
         public ServerProfile(ulong ID, string NamePass)
         {
@@ -85,6 +90,7 @@ namespace Jessbot.Entities
             outgoing.Add(AllowingJoinMsg);
             outgoing.Add(AllowingBansMsg);
             outgoing.Add(AllowingVisible);
+            outgoing.Add(RequiredReads);
 
             // Package is ready. Send.
             return outgoing;

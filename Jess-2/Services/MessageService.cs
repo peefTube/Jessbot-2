@@ -25,6 +25,7 @@ using Jessbot;
 using Jessbot.Entities;
 using Jessbot.Commands.Modules;
 using Jessbot.Commands;
+using Newtonsoft.Json;
 
 namespace Jessbot.Services
 {
@@ -42,10 +43,12 @@ namespace Jessbot.Services
         private readonly ExperienceService _exp;
         private readonly EconomyService _econ;
         private readonly InventoryService _inv;
+        
+        private readonly NamingService _naming;
 
         public MessageService(IServiceProvider services, DiscordSocketClient bot, DatabaseService databaseService, CommandService cmd,
             RegistrationService registryService, ParserService parser, ConversionService converter, ExperienceService exp, EconomyService econ,
-            InventoryService inv)
+            InventoryService inv, NamingService naming)
         {
             _services = services;
             _bot = bot;
@@ -59,6 +62,8 @@ namespace Jessbot.Services
             _exp = exp;
             _econ = econ;
             _inv = inv;
+
+            _naming = naming;
         }
 
         // Receives and handles incoming messages.
@@ -149,7 +154,7 @@ namespace Jessbot.Services
 
                     // Log again to console.
                     Logger.MessageStep(MsgStep.CheckReg, false); // This signifies that the check has finished.
-
+                    
                     // Now that the user is definitely registered, offload the message functionality
                     // as necessary.
                     // Offload the message to the experience handler.
@@ -163,6 +168,14 @@ namespace Jessbot.Services
                         var context = new CoreContext(_bot, msg as SocketUserMessage, _prefix);
                         var result = await _cmd.ExecuteAsync(context, _pos, _services);
                     }
+
+                    // Before saving, use the Naming Service to refresh any username information.
+                    // This should *hopefully* ensure all user information is up-to-date.
+                    _naming.RefreshNameData();
+                    _naming.RefreshAliasList();
+
+                    // Log to the console that the Naming Service has finished all refresh patterns.
+                    Logger.MessageStep(MsgStep.NameServRefreshed);
 
                     // Everything is finished! Set any necessary values, 
                     // then save the database to prevent any issues.
