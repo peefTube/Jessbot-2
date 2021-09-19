@@ -244,6 +244,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\CoreContext.cs" />
+    <Compile Include="Commands\Modules\OwnerModule.cs" />
     <Compile Include="Commands\Modules\Admin\ServerRegistryCommand.cs" />
     <Compile Include="Commands\Modules\MiscModule.cs" />
     <Compile Include="Commands\Modules\AdminModule.cs" />
@@ -389,6 +390,7 @@
     <Folder Include=".vs\TAIANAUnit\v15\" />
     <Folder Include="bin\Debug\ADV_HIERARCHY\USERS\" />
     <Folder Include="bin\Release\" />
+    <Folder Include="Commands\Modules\Owner\" />
     <Folder Include="Pictures\" />
   </ItemGroup>
   <ItemGroup>
