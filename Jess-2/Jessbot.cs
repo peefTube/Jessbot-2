@@ -137,7 +137,7 @@ namespace Jessbot
                 // Sets the MessageCacheSize.
                 MessageCacheSize = 256,
 
-                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildPresences | GatewayIntents.GuildMembers | GatewayIntents.GuildBans | GatewayIntents.GuildEmojis | GatewayIntents.GuildMessages | GatewayIntents.DirectMessages | GatewayIntents.DirectMessageReactions
+                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildPresences | GatewayIntents.GuildMembers | GatewayIntents.GuildBans | GatewayIntents.GuildEmojis | GatewayIntents.GuildMessages | GatewayIntents.GuildMessageReactions | GatewayIntents.DirectMessages | GatewayIntents.DirectMessageReactions
             });
 
             // Log to console.
@@ -171,6 +171,8 @@ namespace Jessbot
             Logger.InitService(ServiceType.Experience);
             Logger.InitService(ServiceType.Economy);
             Logger.InitService(ServiceType.Inventory);
+            Logger.InitService(ServiceType.GuildInterfacer);
+            Logger.InitService(ServiceType.NameHandler);
 
             #endregion
             Logger.InitStatus(false, true, InitType.Inject);
@@ -237,10 +239,12 @@ namespace Jessbot
         // Modified heavily, to work as needed for this code.
         private static IServiceProvider ServiceInjector(DiscordSocketClient client, CommandService commandSys)
         {
+            InteractivityConfig configuration = new InteractivityConfig(){ DefaultTimeout = TimeSpan.FromSeconds(20), RunOnGateway = true };
+
             return new ServiceCollection()
                 .AddSingleton(client)
                 .AddSingleton(commandSys)
-                .AddSingleton(new InteractivityService(client, new InteractivityConfig()))
+                .AddSingleton(new InteractivityService(client, configuration))
                 .AddSingleton<DatabaseService>()
                 .AddSingleton<MessageService>()
                 .AddSingleton<ParserService>()

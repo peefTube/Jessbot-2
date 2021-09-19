@@ -37,6 +37,9 @@ namespace Jessbot.Commands.Modules
         [Summary("Server registration, registers this particular server.")]
         public async Task RegServer()
         {
+            // Log to console.
+            Logger.Post("[COMMAND] Command acknowledged. Running server registry command.", Color.Teal);
+
             int Stage = 1;  // Iterate through all stages of server setup.
             int Stages = 8; // Set the maximum number of stages to iterate through.
             int IsEditing = 0; // 0 = Not editing; 1 = Primed to edit; 2 = Editing
@@ -51,6 +54,9 @@ namespace Jessbot.Commands.Modules
 
             // Pre-generate a new profile to work from.
             ServerProfile ServerPass = new ServerProfile(Context.Guild.Id, Context.Guild.Name);
+            
+            // Log to console.
+            Logger.Post("[COMMAND:SVREG] Prepped. Sending messages.", Color.Teal);
 
             await ReplyAsync("Hello! I can indeed register your server. Just let me check a few things first.");
             await Task.Delay(700);
@@ -61,9 +67,17 @@ namespace Jessbot.Commands.Modules
                 await ReplyAsync("Hmm... well... it would seem this server is already registered. However, I can allow you to make edits!");
                 IsEditing = 1;
                 ServerPass = new ServerProfile(Database.GetGuilds()[Context.Guild.Id].DataPass());
+                
+                // Log to console.
+                Logger.Post($"[COMMAND:SVREG] Server is already registered. Querying user {Context.User.Username.ToUpper()}#{Context.User.Discriminator} about edits.", Color.Teal);
             }
             else
-            { await ReplyAsync("Hmm... let's see here... okay, your server isn't registered yet, so let's get started!"); }
+            {
+                await ReplyAsync("Hmm... let's see here... okay, your server isn't registered yet, so let's get started!");
+
+                // Log to console.
+                Logger.Post($"[COMMAND:SVREG] Server is not registered. Starting editing procedure.", Color.Teal);
+            }
 
             if (IsEditing == 1)
             {
@@ -76,9 +90,15 @@ namespace Jessbot.Commands.Modules
                 if (confirm.Value == true)
                 {
                     await Context.Channel.SendMessageAsync("Okay! We can get started on editing now. :thumbsup:"); IsEditing = 2;
+
+                    // Log to console.
+                    Logger.Post($"[COMMAND:SVREG] Editing query completed with result TRUE.", Color.Teal);
                 }
                 else
                 {
+                    // Log to console.
+                    Logger.Post($"[COMMAND:SVREG] Editing query completed with result FALSE.", Color.Teal);
+
                     await Context.Channel.SendMessageAsync("Fair enough. I'll be here when you need me."); return;
                 }
             }
@@ -92,6 +112,10 @@ namespace Jessbot.Commands.Modules
 
             while (Stage == 1)
             {
+                // Log to console.
+                Logger.Post($"[COMMAND:SVREG] STEP 1: WELCOME CHANNEL", Color.Teal);
+                Logger.Post($"[COMMAND:SVREG] Awaiting proper channel input.", Color.Teal);
+
                 // Stage 1
                 Popup.AddField("Welcome Channel", "Please write either a Discord channel tag or a channel's numeric ID.\n" +
                     "If you wish to skip this step, please write `skip`.");
@@ -115,6 +139,9 @@ namespace Jessbot.Commands.Modules
                         Popup.Fields.Clear();
                         PopupMid.Fields.Clear();
 
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] User opted to skip this step.", Color.Teal);
+
                         Stage = 2;
                         break;
                     }
@@ -126,7 +153,12 @@ namespace Jessbot.Commands.Modules
                             {
                                 if (Context.Guild.TextChannels.Contains(Bot.GetChannel(ulong.Parse(first.Value.Content)))
                                     || (ulong.Parse(first.Value.Content) == 0))
-                                { IDPass = ulong.Parse(first.Value.Content); }
+                                {
+                                    IDPass = ulong.Parse(first.Value.Content);
+
+                                    // Log to console.
+                                    Logger.Post($"[COMMAND:SVREG] User provided a channel in the form of an ID number.", Color.Teal);
+                                }
                                 else
                                 {
                                     PopupMid.AddField("Incorrect Input", "Oops! That's not something I can use. Try again.");
@@ -136,6 +168,9 @@ namespace Jessbot.Commands.Modules
                                     PopupMid.Fields.Clear();
 
                                     Mistake = true;
+                                    
+                                    // Log to console.
+                                    Logger.Post($"[COMMAND:SVREG] User made an error.", Color.Teal);
                                 }
                             }
                             catch
@@ -147,14 +182,25 @@ namespace Jessbot.Commands.Modules
                                 PopupMid.Fields.Clear();
 
                                 Mistake = true;
+
+                                // Log to console.
+                                Logger.Post($"[COMMAND:SVREG] User made an error.", Color.Teal);
                             }
                         }
                         else
-                        { IDPass = first.Value.MentionedChannels.ElementAt(0).Id; }
+                        {
+                            IDPass = first.Value.MentionedChannels.ElementAt(0).Id;
+                            
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User provided a channel.", Color.Teal);
+                        }
                     }
 
                     if (!Mistake)
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] Asking user to confirm choice.", Color.Teal);
+
                         var request = new ConfirmationBuilder()
                         .WithContent(new PageBuilder().WithText($"Would you like to set **Welcome Channel** to <#{IDPass}> ({IDPass.ToString("D18")})?"))
                         .Build();
@@ -162,10 +208,21 @@ namespace Jessbot.Commands.Modules
                         var confirm = await Interaction.SendConfirmationAsync(request, Context.Channel);
 
                         if (confirm.Value == true)
-                        { await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 2; break; }
+                        {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmed their choice. Proceeding.", Color.Teal);
+
+                            await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 2;
+                            break;
+                        }
                         else
-                        { await Context.Channel.SendMessageAsync("Alright. Let's try again, then. Please say `skip` if you don't want to " +
-                                  "fill in this value."); }
+                        {
+                            await Context.Channel.SendMessageAsync("Alright. Let's try again, then. Please say `skip` if you don't want to " +
+                                  "fill in this value.");
+                            
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmation failed or timed out. Trying again.", Color.Teal);
+                        }
                     }
 
                     // Just in case...
@@ -181,6 +238,10 @@ namespace Jessbot.Commands.Modules
             
             while (Stage == 2)
             {
+                // Log to console.
+                Logger.Post($"[COMMAND:SVREG] STEP 2: WELCOME ROLE", Color.Teal);
+                Logger.Post($"[COMMAND:SVREG] Awaiting proper role input.", Color.Teal);
+
                 // Stage 2
                 Popup.AddField("Welcome Role", "Please write either a Discord role tag or a role's numeric ID.\n" +
                     "If you wish to skip this step, please write `skip`.");
@@ -196,6 +257,9 @@ namespace Jessbot.Commands.Modules
                 {
                     if (second.Value.Content.ToLower() == "skip")
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] User opted to skip this step.", Color.Teal);
+
                         PopupMid.AddField("Skipping...", "Okay, we'll skip this step, then.");
                         await ReplyAsync("", false, PopupMid.Build());
 
@@ -213,9 +277,17 @@ namespace Jessbot.Commands.Modules
                             {
                                 if (Context.Guild.Users.Contains(Bot.GetUser(ulong.Parse(second.Value.Content)))
                                     || (ulong.Parse(second.Value.Content) == 0))
-                                { IDPass = ulong.Parse(second.Value.Content); }
+                                {
+                                    IDPass = ulong.Parse(second.Value.Content);
+
+                                    // Log to console.
+                                    Logger.Post($"[COMMAND:SVREG] User provided a role in the form of an ID number.", Color.Teal);
+                                }
                                 else
                                 {
+                                    // Log to console.
+                                    Logger.Post($"[COMMAND:SVREG] User made an error.", Color.Teal);
+
                                     PopupMid.AddField("Incorrect Input", "Oops! That's not something I can use. Try again.");
                                     await ReplyAsync("", false, PopupMid.Build());
 
@@ -227,6 +299,9 @@ namespace Jessbot.Commands.Modules
                             }
                             catch
                             {
+                                // Log to console.
+                                Logger.Post($"[COMMAND:SVREG] User made an error.", Color.Teal);
+
                                 PopupMid.AddField("Incorrect Input", "Oops! That's not something I can use. Try again.");
                                 await ReplyAsync("", false, PopupMid.Build());
 
@@ -239,11 +314,17 @@ namespace Jessbot.Commands.Modules
                         else
                         {
                             IDPass = second.Value.MentionedRoles.ElementAt(0).Id;
+
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User provided a role.", Color.Teal);
                         }
                     }
 
                     if (!Mistake)
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] Asking user to confirm choice.", Color.Teal);
+
                         var request = new ConfirmationBuilder()
                         .WithContent(new PageBuilder().WithText($"Would you like to set **Welcome Role** to <#{IDPass}> ({IDPass.ToString("D18")})?"))
                         .Build();
@@ -251,11 +332,19 @@ namespace Jessbot.Commands.Modules
                         var confirm = await Interaction.SendConfirmationAsync(request, Context.Channel);
 
                         if (confirm.Value == true)
-                        { await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 3; break; }
+                        {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmed their choice. Proceeding.", Color.Teal);
+
+                            await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 3; break;
+                        }
                         else
                         {
                             await Context.Channel.SendMessageAsync("Alright. Let's try again, then. Please say `skip` if you don't want to " +
                                   "fill in this value.");
+                            
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmation failed or timed out. Trying again.", Color.Teal);
                         }
                     }
 
@@ -272,6 +361,10 @@ namespace Jessbot.Commands.Modules
 
             while (Stage == 3)
             {
+                // Log to console.
+                Logger.Post($"[COMMAND:SVREG] STEP 3: MOD CHANNEL", Color.Teal);
+                Logger.Post($"[COMMAND:SVREG] Awaiting proper channel input.", Color.Teal);
+
                 // Stage 3
                 Popup.AddField("Mod Channel", "Please write either a Discord channel tag or a channel's numeric ID.\n" +
                     "If you wish to skip this step, please write `skip`.");
@@ -289,6 +382,9 @@ namespace Jessbot.Commands.Modules
                 {
                     if (third.Value.Content.ToLower() == "skip")
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] User opted to skip this step.", Color.Teal);
+
                         PopupMid.AddField("Skipping...", "Okay, we'll skip this step, then.");
                         await ReplyAsync("", false, PopupMid.Build());
 
@@ -306,7 +402,13 @@ namespace Jessbot.Commands.Modules
                             {
                                 if (Context.Guild.TextChannels.Contains(Bot.GetChannel(ulong.Parse(third.Value.Content)))
                                     || (ulong.Parse(third.Value.Content) == 0))
-                                { IDPass = ulong.Parse(third.Value.Content); }
+                                {
+                                    IDPass = ulong.Parse(third.Value.Content);
+
+                                    // Log to console.
+                                    Logger.Post($"[COMMAND:SVREG] User provided a channel in the form of an ID number.", Color.Teal);
+
+                                }
                                 else
                                 {
                                     PopupMid.AddField("Incorrect Input", "Oops! That's not something I can use. Try again.");
@@ -316,6 +418,9 @@ namespace Jessbot.Commands.Modules
                                     PopupMid.Fields.Clear();
 
                                     Mistake = true;
+
+                                    // Log to console.
+                                    Logger.Post($"[COMMAND:SVREG] User made an error.", Color.Teal);
                                 }
                             }
                             catch
@@ -327,14 +432,25 @@ namespace Jessbot.Commands.Modules
                                 PopupMid.Fields.Clear();
 
                                 Mistake = true;
+
+                                // Log to console.
+                                Logger.Post($"[COMMAND:SVREG] User made an error.", Color.Teal);
                             }
                         }
                         else
-                        { IDPass = third.Value.MentionedChannels.ElementAt(0).Id; }
+                        {
+                            IDPass = third.Value.MentionedChannels.ElementAt(0).Id;
+                            
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User provided a channel.", Color.Teal);
+                        }
                     }
 
                     if (!Mistake)
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] Asking user to confirm choice.", Color.Teal);
+
                         var request = new ConfirmationBuilder()
                         .WithContent(new PageBuilder().WithText($"Would you like to set **Mod Channel** to <#{IDPass}> ({IDPass.ToString("D18")})?"))
                         .Build();
@@ -342,11 +458,19 @@ namespace Jessbot.Commands.Modules
                         var confirm = await Interaction.SendConfirmationAsync(request, Context.Channel);
 
                         if (confirm.Value == true)
-                        { await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 4; break; }
+                        {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmed their choice. Proceeding.", Color.Teal);
+
+                            await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 4; break;
+                        }
                         else
                         {
                             await Context.Channel.SendMessageAsync("Alright. Let's try again, then. Please say `skip` if you don't want to " +
                                     "fill in this value.");
+
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmation failed or timed out. Trying again.", Color.Teal);
                         }
                     }
 
@@ -363,6 +487,10 @@ namespace Jessbot.Commands.Modules
 
             while (Stage == 4)
             {
+                // Log to console.
+                Logger.Post($"[COMMAND:SVREG] STEP 4: PREFIX", Color.Teal);
+                Logger.Post($"[COMMAND:SVREG] Awaiting proper prefix input.", Color.Teal);
+
                 // Stage 4
                 Popup.AddField("Prefix", "Please write a new prefix.\n" +
                     "If you wish to skip this step, please write `skip`.");
@@ -380,6 +508,9 @@ namespace Jessbot.Commands.Modules
                 {
                     if (fourth.Value.Content.ToLower() == "skip")
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] User opted to skip this step.", Color.Teal);
+                        
                         PopupMid.AddField("Skipping...", "Okay, we'll skip this step, then.");
                         await ReplyAsync("", false, PopupMid.Build());
 
@@ -392,9 +523,17 @@ namespace Jessbot.Commands.Modules
                     else
                     {
                         if (fourth.Value.Content.StartsWith('"'.ToString()) && fourth.Value.Content.EndsWith('"'.ToString()))
-                        { TextPass = fourth.Value.Content.Substring(1, fourth.Value.Content.Length - 2); }
+                        {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User provided a valid prefix.", Color.Teal);
+
+                            TextPass = fourth.Value.Content.Substring(1, fourth.Value.Content.Length - 2);
+                        }
                         else
                         {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User made an error.", Color.Teal);
+
                             PopupMid.AddField("Incorrect Input", "Oops! That's not something I can use. Try again.");
                             await ReplyAsync("", false, PopupMid.Build());
 
@@ -407,6 +546,9 @@ namespace Jessbot.Commands.Modules
 
                     if (!Mistake)
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] Asking user to confirm choice.", Color.Teal);
+
                         var request = new ConfirmationBuilder()
                         .WithContent(new PageBuilder().WithText($"Would you like to set **Prefix** to {TextPass}?"))
                         .Build();
@@ -414,11 +556,19 @@ namespace Jessbot.Commands.Modules
                         var confirm = await Interaction.SendConfirmationAsync(request, Context.Channel);
 
                         if (confirm.Value == true)
-                        { await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 5; break; }
+                        {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmed their choice. Proceeding.", Color.Teal);
+
+                            await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 5; break;
+                        }
                         else
                         {
                             await Context.Channel.SendMessageAsync("Alright. Let's try again, then. Please say `skip` if you don't want to " +
                                     "fill in this value.");
+
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmation failed or timed out. Trying again.", Color.Teal);
                         }
                     }
 
@@ -435,6 +585,10 @@ namespace Jessbot.Commands.Modules
 
             while (Stage == 5)
             {
+                // Log to console.
+                Logger.Post($"[COMMAND:SVREG] STEP 5: INVITES", Color.Teal);
+                Logger.Post($"[COMMAND:SVREG] Awaiting proper boolean input.", Color.Teal);
+
                 // Stage 5
                 Popup.AddField("Allow Invites", "Please write either `true` or `false`.\n" +
                     "If you wish to skip this step, please write `skip`.");
@@ -452,6 +606,9 @@ namespace Jessbot.Commands.Modules
                 {
                     if (fifth.Value.Content.ToLower() == "skip")
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] User opted to skip this step.", Color.Teal);
+
                         PopupMid.AddField("Skipping...", "Okay, we'll skip this step, then.");
                         await ReplyAsync("", false, PopupMid.Build());
 
@@ -466,9 +623,15 @@ namespace Jessbot.Commands.Modules
                         try
                         {
                             TFPass = bool.Parse(fifth.Value.Content);
+                            
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User provided a valid value {TFPass.ToString().ToUpper()}.", Color.Teal);
                         }
                         catch
                         {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User made an error.", Color.Teal);
+
                             PopupMid.AddField("Incorrect Input", "Oops! That's not something I can use. Try again.");
                             await ReplyAsync("", false, PopupMid.Build());
 
@@ -481,6 +644,9 @@ namespace Jessbot.Commands.Modules
 
                     if (!Mistake)
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] Asking user to confirm choice.", Color.Teal);
+
                         var request = new ConfirmationBuilder()
                         .WithContent(new PageBuilder().WithText($"Would you like to set **Allow Invites** to {TFPass}?"))
                         .Build();
@@ -488,11 +654,19 @@ namespace Jessbot.Commands.Modules
                         var confirm = await Interaction.SendConfirmationAsync(request, Context.Channel);
 
                         if (confirm.Value == true)
-                        { await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 6; break; }
+                        {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmed their choice. Proceeding.", Color.Teal);
+
+                            await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 6; break;
+                        }
                         else
                         {
                             await Context.Channel.SendMessageAsync("Alright. Let's try again, then. Please say `skip` if you don't want to " +
                                     "fill in this value.");
+
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmation failed or timed out. Trying again.", Color.Teal);
                         }
                     }
 
@@ -509,6 +683,10 @@ namespace Jessbot.Commands.Modules
 
             while (Stage == 6)
             {
+                // Log to console.
+                Logger.Post($"[COMMAND:SVREG] STEP 6: JOINS", Color.Teal);
+                Logger.Post($"[COMMAND:SVREG] Awaiting proper boolean input.", Color.Teal);
+
                 // Stage 6
                 Popup.AddField("Allow Join Messages", "Please write either `true` or `false`.\n" +
                     "If you wish to skip this step, please write `skip`.");
@@ -526,6 +704,9 @@ namespace Jessbot.Commands.Modules
                 {
                     if (sixth.Value.Content.ToLower() == "skip")
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] User opted to skip this step.", Color.Teal);
+
                         PopupMid.AddField("Skipping...", "Okay, we'll skip this step, then.");
                         await ReplyAsync("", false, PopupMid.Build());
 
@@ -540,9 +721,15 @@ namespace Jessbot.Commands.Modules
                         try
                         {
                             TFPass = bool.Parse(sixth.Value.Content);
+
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User provided a valid value {TFPass.ToString().ToUpper()}.", Color.Teal);
                         }
                         catch
                         {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User made an error.", Color.Teal);
+                            
                             PopupMid.AddField("Incorrect Input", "Oops! That's not something I can use. Try again.");
                             await ReplyAsync("", false, PopupMid.Build());
 
@@ -555,6 +742,9 @@ namespace Jessbot.Commands.Modules
 
                     if (!Mistake)
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] Asking user to confirm choice.", Color.Teal);
+
                         var request = new ConfirmationBuilder()
                         .WithContent(new PageBuilder().WithText($"Would you like to set **Allow Join Messages** to {TFPass}?"))
                         .Build();
@@ -562,11 +752,19 @@ namespace Jessbot.Commands.Modules
                         var confirm = await Interaction.SendConfirmationAsync(request, Context.Channel);
 
                         if (confirm.Value == true)
-                        { await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 7; break; }
+                        {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmed their choice. Proceeding.", Color.Teal);
+
+                            await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 7; break;
+                        }
                         else
                         {
                             await Context.Channel.SendMessageAsync("Alright. Let's try again, then. Please say `skip` if you don't want to " +
                                     "fill in this value.");
+
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmation failed or timed out. Trying again.", Color.Teal);
                         }
                     }
 
@@ -583,6 +781,10 @@ namespace Jessbot.Commands.Modules
 
             while (Stage == 7)
             {
+                // Log to console.
+                Logger.Post($"[COMMAND:SVREG] STEP 7: BANS", Color.Teal);
+                Logger.Post($"[COMMAND:SVREG] Awaiting proper boolean input.", Color.Teal);
+
                 // Stage 7
                 Popup.AddField("Allow Ban Messages", "Please write either `true` or `false`.\n" +
                     "If you wish to skip this step, please write `skip`.");
@@ -600,6 +802,9 @@ namespace Jessbot.Commands.Modules
                 {
                     if (seventh.Value.Content.ToLower() == "skip")
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] User opted to skip this step.", Color.Teal);
+
                         PopupMid.AddField("Skipping...", "Okay, we'll skip this step, then.");
                         await ReplyAsync("", false, PopupMid.Build());
 
@@ -614,9 +819,15 @@ namespace Jessbot.Commands.Modules
                         try
                         {
                             TFPass = bool.Parse(seventh.Value.Content);
+
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User provided a valid value {TFPass.ToString().ToUpper()}.", Color.Teal);
                         }
                         catch
                         {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User made an error.", Color.Teal);
+
                             PopupMid.AddField("Incorrect Input", "Oops! That's not something I can use. Try again.");
                             await ReplyAsync("", false, PopupMid.Build());
 
@@ -629,6 +840,9 @@ namespace Jessbot.Commands.Modules
 
                     if (!Mistake)
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] Asking user to confirm choice.", Color.Teal);
+
                         var request = new ConfirmationBuilder()
                         .WithContent(new PageBuilder().WithText($"Would you like to set **Allow Ban Messages** to {TFPass}?"))
                         .Build();
@@ -636,11 +850,19 @@ namespace Jessbot.Commands.Modules
                         var confirm = await Interaction.SendConfirmationAsync(request, Context.Channel);
 
                         if (confirm.Value == true)
-                        { await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 8; break; }
+                        {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmed their choice. Proceeding.", Color.Teal);
+
+                            await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 8; break;
+                        }
                         else
                         {
                             await Context.Channel.SendMessageAsync("Alright. Let's try again, then. Please say `skip` if you don't want to " +
                                     "fill in this value.");
+
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmation failed or timed out. Trying again.", Color.Teal);
                         }
                     }
 
@@ -657,6 +879,10 @@ namespace Jessbot.Commands.Modules
 
             while (Stage == 8)
             {
+                // Log to console.
+                Logger.Post($"[COMMAND:SVREG] STEP 8: PUBLICITY", Color.Teal);
+                Logger.Post($"[COMMAND:SVREG] Awaiting proper boolean input.", Color.Teal);
+
                 // Stage 8
                 Popup.AddField("Publicity", "Please write either `true` or `false`.\n" +
                     "If you wish to skip this step, please write `skip`.");
@@ -674,6 +900,9 @@ namespace Jessbot.Commands.Modules
                 {
                     if (eighth.Value.Content.ToLower() == "skip")
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] User opted to skip this step.", Color.Teal);
+
                         PopupMid.AddField("Skipping...", "Okay, we'll skip this step, then.");
                         await ReplyAsync("", false, PopupMid.Build());
 
@@ -688,9 +917,15 @@ namespace Jessbot.Commands.Modules
                         try
                         {
                             TFPass = bool.Parse(eighth.Value.Content);
+
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User provided a valid value {TFPass.ToString().ToUpper()}.", Color.Teal);
                         }
                         catch
                         {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User made an error.", Color.Teal);
+
                             PopupMid.AddField("Incorrect Input", "Oops! That's not something I can use. Try again.");
                             await ReplyAsync("", false, PopupMid.Build());
 
@@ -703,6 +938,9 @@ namespace Jessbot.Commands.Modules
 
                     if (!Mistake)
                     {
+                        // Log to console.
+                        Logger.Post($"[COMMAND:SVREG] Asking user to confirm choice.", Color.Teal);
+
                         var request = new ConfirmationBuilder()
                         .WithContent(new PageBuilder().WithText($"Would you like to set **Publicity** to {TFPass}?"))
                         .Build();
@@ -710,11 +948,19 @@ namespace Jessbot.Commands.Modules
                         var confirm = await Interaction.SendConfirmationAsync(request, Context.Channel);
 
                         if (confirm.Value == true)
-                        { await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 9; break; }
+                        {
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmed their choice. Proceeding.", Color.Teal);
+
+                            await Context.Channel.SendMessageAsync("Okay! We can continue. :thumbsup:"); Stage = 9; break;
+                        }
                         else
                         {
                             await Context.Channel.SendMessageAsync("Alright. Let's try again, then. Please say `skip` if you don't want to " +
                                     "fill in this value.");
+
+                            // Log to console.
+                            Logger.Post($"[COMMAND:SVREG] User confirmation failed or timed out. Trying again.", Color.Teal);
                         }
                     }
 
@@ -793,6 +1039,9 @@ namespace Jessbot.Commands.Modules
 
             // Build and show user.
             await ReplyAsync("", false, Popup.Build());
+            
+            // Log to console.
+            Logger.Post($"[COMMAND:SVREG] Asking user to review.", Color.Teal);
 
             // Confirm the user's edits and exit.
             var passConfirm = new ConfirmationBuilder()
@@ -803,6 +1052,9 @@ namespace Jessbot.Commands.Modules
 
             if (passConfirmResult.Value == true)
             {
+                // Log to console.
+                Logger.Post($"[COMMAND:SVREG] User has reviewed and desires these changes.", Color.Teal);
+
                 await Context.Channel.SendMessageAsync("Alright! Just let me file this real quiiiiick...");
                 await Task.Delay(700);
                 await Context.Channel.SendMessageAsync("*alright, ok, aaaaaaand...*");
@@ -812,9 +1064,15 @@ namespace Jessbot.Commands.Modules
                     await Context.Channel.SendMessageAsync("*hmm-hmm-hmm, ah, here we go, and leeeet's swap that out here... and...*");
                     Database.GetGuilds()[Context.Guild.Id] = ServerPass;
                     await Task.Delay(900);
+                    
+                    // Log to console.
+                    Logger.Post($"[COMMAND:SVREG] Finalizing edits.", Color.Teal);
                 }
                 else
                 {
+                    // Log to console.
+                    Logger.Post($"[COMMAND:SVREG] Registering server.", Color.Teal);
+
                     await Context.Channel.SendMessageAsync("*alright, that's not in here, so leeeet's sort that out... aha!\n" +
                         $"filed under **{Context.Guild.Name[0].ToString().ToUpper()}**! let's just put this in heeeere... and...*");
                     Database.GetGuilds().Add(ServerPass.GuildId, ServerPass);
@@ -829,11 +1087,17 @@ namespace Jessbot.Commands.Modules
                 
                 // Ensure the database saves the new information.
                 Database.Save();
+                
+                // Log to console.
+                Logger.Post($"[COMMAND:SVREG] Database saved.", Color.Teal);
 
                 return;
             }
             else
             {
+                // Log to console.
+                Logger.Post($"[COMMAND:SVREG] User cancelled operation.", Color.Teal);
+
                 await Context.Channel.SendMessageAsync("Oh. Okay. Well, when you are ready to register or make some edits to the " +
                     "server profile, please don't hesitate to let me know!");
 

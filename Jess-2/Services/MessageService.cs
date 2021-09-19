@@ -174,6 +174,9 @@ namespace Jessbot.Services
                     _naming.RefreshNameData();
                     _naming.RefreshAliasList();
 
+                    // Log to the console that the Naming Service has finished all refresh patterns.
+                    Logger.MessageStep(MsgStep.NameServRefreshed);
+
                     // Everything is finished! Set any necessary values, 
                     // then save the database to prevent any issues.
                     _db.Save();
