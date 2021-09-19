@@ -44,7 +44,10 @@ namespace Jessbot.Services
             if (Jessbot._loadGuilds)
             {
                 // Read from JSON.
-                _guilds = JsonConvert.DeserializeObject<Dictionary<ulong, ServerProfile>>(File.ReadAllText($"{DatabaseDirPath}/server_database.json"));
+                _guilds = ReadServerDatabase($"{DatabaseDirPath}/server_database.json");
+
+                // DEPRECATED
+                // _guilds = JsonConvert.DeserializeObject<Dictionary<ulong, ServerProfile>>(File.ReadAllText($"{DatabaseDirPath}/server_database.json"));
 
                 #region DEPRECATED - SERVER LOAD
                 /*

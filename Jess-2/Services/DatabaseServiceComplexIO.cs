@@ -31,6 +31,57 @@ namespace Jessbot.Services
 
     public partial class DatabaseService
     {
+        #region SERVER DATA
+        // Prep for serverdata reading.
+        private Dictionary<ulong, ServerNucleus> ServerNuclei = new Dictionary<ulong, ServerNucleus>();
+
+        public Dictionary<ulong, ServerProfile> ReadServerDatabase(string source)
+        {
+            return ConvertServerNucleiToProfiles(RSD_RAW(source));
+        }
+
+        public Dictionary<ulong, ServerNucleus> RSD_RAW(string source)
+        {
+            ServerNuclei = JsonConvert.DeserializeObject<Dictionary<ulong, ServerNucleus>>(File.ReadAllText(source));
+            return ServerNuclei;
+        }
+
+        public Dictionary<ulong, ServerProfile> ConvertServerNucleiToProfiles(Dictionary<ulong, ServerNucleus> nuclei)
+        {
+            Dictionary<ulong, ServerProfile> ParsedProfileList = new Dictionary<ulong, ServerProfile>();
+
+            foreach (ulong i in nuclei.Keys)
+            {
+                // Conversion!
+                ServerNucleus Curr = nuclei[i];
+                ServerProfile TempGuild = new ServerProfile(i, Curr.Name)
+                {
+                    WelcomeChannel  = Curr.WelcomeChannel,
+                    WelcomeRole     = Curr.WelcomeRole,
+                    ModChannel      = Curr.ModChannel,
+
+                    Prefix          = Curr.Prefix,
+
+                    RequiredReads   = Curr.RequiredReads,
+
+                    AllowingInvites = Curr.AllowingInvites,
+                    AllowingJoinMsg = Curr.AllowingJoinMsg,
+                    AllowingBansMsg = Curr.AllowingBansMsg,
+                    AllowingVisible = Curr.AllowingVisible,
+                };
+
+                ParsedProfileList.Add(i, TempGuild);
+
+                Curr = null;
+                TempGuild = null;
+            }
+
+            return ParsedProfileList;
+        }
+
+        #endregion
+
+        #region USER DATA
         // Prep for userdata reading.
         private Dictionary<ulong, UserNucleus> UserNuclei = new Dictionary<ulong, UserNucleus>();
 
@@ -81,8 +132,47 @@ namespace Jessbot.Services
 
             return ParsedProfileList;
         }
+
+        #endregion
     }
 
+    #region SERVER NUCLEI
+    // This is used to parse a new server from JSON code.
+    public class ServerNucleus
+    {
+        // Structured as if the JSON file.
+        [JsonPropertyName("GuildId")]
+        public ulong GuildId                { get; set; }   // internal ID
+        [JsonPropertyName("Name")]
+        public string Name                  { get; set; }   // internal guild name - this 'floats'
+
+        [JsonPropertyName("WelcomeChannel")]
+        public ulong WelcomeChannel         { get; set; }   // internal ID for desired channel
+        [JsonPropertyName("WelcomeRole")]
+        public ulong WelcomeRole            { get; set; }   // internal ID for desired role
+        [JsonPropertyName("ModChannel")]
+        public ulong ModChannel             { get; set; }   // internal ID for desired channel
+
+        [JsonPropertyName("Prefix")]
+        public string Prefix                { get; set; }   // internal string for server's command prefix
+
+        [JsonPropertyName("RequiredReads")]
+        public List<ulong> RequiredReads    { get; set; }   // List object for holding internal channel IDs
+
+        // These should explain themselves.
+        [JsonPropertyName("AllowingInvites")]
+        public bool AllowingInvites         { get; set; }
+        [JsonPropertyName("AllowingJoinMsg")]
+        public bool AllowingJoinMsg         { get; set; }
+        [JsonPropertyName("AllowingBansMsg")]
+        public bool AllowingBansMsg         { get; set; }
+        [JsonPropertyName("AllowingVisible")]
+        public bool AllowingVisible         { get; set; }
+    }
+
+    #endregion
+
+    #region USER NUCLEI
     // This is used to parse a new user from JSON code.
     public class UserNucleus
     {
@@ -207,4 +297,6 @@ namespace Jessbot.Services
             return new Color(this.R, this.G, this.B);
         }
     }
+
+    #endregion
 }
